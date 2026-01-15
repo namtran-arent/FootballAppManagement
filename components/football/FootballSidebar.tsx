@@ -1,6 +1,7 @@
 'use client';
 
 import { Search } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface FootballSidebarProps {
   selectedTeam: string | null;
@@ -15,6 +16,8 @@ export default function FootballSidebar({
   searchQuery,
   onSearchChange,
 }: FootballSidebarProps) {
+  const router = useRouter();
+
   const handleTeamsClick = () => {
     // TODO: Navigate to teams page
     // router.push('/teams');
@@ -25,6 +28,10 @@ export default function FootballSidebar({
     // TODO: Navigate to news page
     // router.push('/news');
     console.log('Navigate to news page');
+  };
+
+  const handleLoanClick = () => {
+    router.push('/loans');
   };
 
   return (
@@ -59,6 +66,16 @@ export default function FootballSidebar({
             className="w-full px-3 py-2 bg-zinc-700 hover:bg-zinc-600 rounded-lg text-white font-medium transition-colors text-left"
           >
             <span className="text-sm uppercase tracking-wider">Teams</span>
+          </button>
+        </div>
+
+        {/* Loan Button */}
+        <div>
+          <button
+            onClick={handleLoanClick}
+            className="w-full px-3 py-2 bg-zinc-700 hover:bg-zinc-600 rounded-lg text-white font-medium transition-colors text-left"
+          >
+            <span className="text-sm uppercase tracking-wider">Loan</span>
           </button>
         </div>
 
