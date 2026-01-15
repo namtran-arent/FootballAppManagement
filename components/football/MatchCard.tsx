@@ -1,7 +1,6 @@
 'use client';
 
-import { Star, Edit2, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { Edit2, Trash2 } from 'lucide-react';
 import { getDefaultAvatarUrl } from '@/lib/storageService';
 
 interface MatchCardProps {
@@ -18,8 +17,6 @@ interface MatchCardProps {
   awayScore: number;
   status: string;
   location?: string;
-  isFavorite?: boolean;
-  onToggleFavorite?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
 }
@@ -32,17 +29,9 @@ export default function MatchCard({
   awayScore,
   status,
   location,
-  isFavorite = false,
-  onToggleFavorite,
   onEdit,
   onDelete,
 }: MatchCardProps) {
-  const [favorite, setFavorite] = useState(isFavorite);
-
-  const handleToggleFavorite = () => {
-    setFavorite(!favorite);
-    onToggleFavorite?.();
-  };
 
   return (
     <div className="px-4 py-3 border-b border-zinc-700 hover:bg-zinc-800 transition-colors">
@@ -85,14 +74,6 @@ export default function MatchCard({
 
         {/* Action Buttons */}
         <div className="ml-4 flex items-center gap-2">
-          <button
-            onClick={handleToggleFavorite}
-            className="text-zinc-400 hover:text-yellow-400 transition-colors"
-          >
-            <Star
-              className={`w-5 h-5 ${favorite ? 'fill-yellow-400 text-yellow-400' : ''}`}
-            />
-          </button>
           {onEdit && (
             <button
               onClick={onEdit}

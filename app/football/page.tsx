@@ -13,16 +13,12 @@ export default function FootballPage() {
     <div className="min-h-screen bg-zinc-900 text-white">
       <FootballHeader />
       <div className="flex">
-        <FootballSidebar
-          selectedTeam={selectedTeam}
-          onTeamChange={setSelectedTeam}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-        />
+        <FootballSidebar />
         <div className="flex-1">
           <MatchSchedule
             selectedTeam={selectedTeam}
             searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
           />
         </div>
       </div>

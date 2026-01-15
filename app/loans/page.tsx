@@ -2,22 +2,44 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import FootballHeader from '@/components/football/FootballHeader';
+import FootballSidebar from '@/components/football/FootballSidebar';
 import LoanList from '@/components/loans/LoanList';
 import LoanForm from '@/components/loans/LoanForm';
 import { Loan, getAllLoans, createLoan, updateLoan, deleteLoan } from '@/lib/loanService';
+import Toast from '@/components/ui/Toast';
 import { getSupabaseUserId } from '@/lib/userService';
 
 export type { Loan };
 
+// Helper function to get date string in YYYY-MM-DD format
+const getDateString = (date: Date): string => {
+  return date.toISOString().split('T')[0];
+};
+
 export default function LoansPage() {
   const { data: session } = useSession();
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [loans, setLoans] = useState<Loan[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingLoan, setEditingLoan] = useState<Loan | null>(null);
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info'; isVisible: boolean }>({
+    message: '',
+    type: 'success',
+    isVisible: false,
+  });
+
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+    setToast({ message, type, isVisible: true });
+  };
+
+  const hideToast = () => {
+    setToast((prev) => ({ ...prev, isVisible: false }));
+  };
 
   // Load loans from Supabase
   useEffect(() => {
@@ -50,14 +72,19 @@ export default function LoansPage() {
       });
       if (newLoan) {
         setLoans([newLoan, ...loans]);
+        showToast('Loan created successfully!', 'success');
         return true;
       } else {
-        setError('Failed to create loan. Please try again.');
+        const errorMsg = 'Failed to create loan. Please try again.';
+        setError(errorMsg);
+        showToast(errorMsg, 'error');
         return false;
       }
     } catch (err) {
       console.error('Error creating loan:', err);
-      setError('Failed to create loan. Please try again.');
+      const errorMsg = 'Failed to create loan. Please try again.';
+      setError(errorMsg);
+      showToast(errorMsg, 'error');
       return false;
     }
   };
@@ -70,14 +97,19 @@ export default function LoansPage() {
       const updatedLoan = await updateLoan(editingLoan.id, loanData);
       if (updatedLoan) {
         setLoans(loans.map((loan) => (loan.id === editingLoan.id ? updatedLoan : loan)));
+        showToast('Loan updated successfully!', 'success');
         return true;
       } else {
-        setError('Failed to update loan. Please try again.');
+        const errorMsg = 'Failed to update loan. Please try again.';
+        setError(errorMsg);
+        showToast(errorMsg, 'error');
         return false;
       }
     } catch (err) {
       console.error('Error updating loan:', err);
-      setError('Failed to update loan. Please try again.');
+      const errorMsg = 'Failed to update loan. Please try again.';
+      setError(errorMsg);
+      showToast(errorMsg, 'error');
       return false;
     }
   };
@@ -92,12 +124,17 @@ export default function LoansPage() {
       const success = await deleteLoan(loanId);
       if (success) {
         setLoans(loans.filter((loan) => loan.id !== loanId));
+        showToast('Loan deleted successfully!', 'success');
       } else {
-        setError('Failed to delete loan. Please try again.');
+        const errorMsg = 'Failed to delete loan. Please try again.';
+        setError(errorMsg);
+        showToast(errorMsg, 'error');
       }
     } catch (err) {
       console.error('Error deleting loan:', err);
-      setError('Failed to delete loan. Please try again.');
+      const errorMsg = 'Failed to delete loan. Please try again.';
+      setError(errorMsg);
+      showToast(errorMsg, 'error');
     }
   };
 
@@ -129,13 +166,39 @@ export default function LoansPage() {
     
     if (success) {
       handleFormClose();
+      // Reload loans after create/update
+      await loadLoans();
     }
+  };
+
+  // Get selected date string in YYYY-MM-DD format
+  const selectedDateString = getDateString(selectedDate);
+
+  // Filter loans based on selected date (match date)
+  const filteredLoans = loans.filter((loan) => {
+    return loan.match.matchDate === selectedDateString;
+  });
+
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
+  const navigateDate = (direction: 'prev' | 'next') => {
+    const newDate = new Date(selectedDate);
+    newDate.setDate(newDate.getDate() + (direction === 'next' ? 1 : -1));
+    setSelectedDate(newDate);
   };
 
   return (
     <div className="min-h-screen bg-zinc-900 text-white">
       <FootballHeader />
-      <div className="container mx-auto px-6 py-8">
+      <div className="flex">
+        <FootballSidebar />
+        <div className="flex-1 container mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold">Loan Management</h1>
           <button
@@ -144,6 +207,51 @@ export default function LoansPage() {
           >
             + Create Loan
           </button>
+        </div>
+
+        {/* Date Navigation */}
+        <div className="mb-6 bg-zinc-800 rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => navigateDate('prev')}
+              className="p-2 hover:bg-zinc-700 rounded-lg transition-colors"
+              title="Previous day"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            
+            <div className="flex items-center gap-3">
+              <Calendar className="w-5 h-5 text-green-500" />
+              <div className="text-center">
+                <div className="text-lg font-semibold">{formatDate(selectedDate)}</div>
+                <div className="text-xs text-zinc-400">
+                  {selectedDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </div>
+              </div>
+              <input
+                type="date"
+                value={selectedDateString}
+                onChange={(e) => {
+                  if (e.target.value) {
+                    setSelectedDate(new Date(e.target.value));
+                  }
+                }}
+                className="ml-2 px-3 py-1 bg-zinc-700 border border-zinc-600 rounded text-white text-sm focus:outline-none focus:border-green-500"
+              />
+            </div>
+
+            <button
+              onClick={() => navigateDate('next')}
+              className="p-2 hover:bg-zinc-700 rounded-lg transition-colors"
+              title="Next day"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {error && (
@@ -156,9 +264,13 @@ export default function LoansPage() {
           <div className="bg-zinc-800 rounded-lg p-8 text-center">
             <p className="text-zinc-400">Loading loans...</p>
           </div>
+        ) : filteredLoans.length === 0 ? (
+          <div className="bg-zinc-800 rounded-lg p-8 text-center">
+            <p className="text-zinc-400">No loans found for {formatDate(selectedDate)}</p>
+          </div>
         ) : (
           <LoanList
-            loans={loans}
+            loans={filteredLoans}
             onEdit={handleEditLoan}
             onDelete={handleDeleteLoan}
           />
@@ -171,6 +283,15 @@ export default function LoansPage() {
           loan={editingLoan}
           mode={formMode}
         />
+
+        {/* Toast Notification */}
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          isVisible={toast.isVisible}
+          onClose={hideToast}
+        />
+        </div>
       </div>
     </div>
   );

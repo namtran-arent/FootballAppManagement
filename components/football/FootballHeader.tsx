@@ -17,24 +17,7 @@ export default function FootballHeader() {
 
           {/* Navigation Links */}
           <nav className="hidden md:flex items-center gap-6">
-            <Link
-              href="/football"
-              className="text-white font-semibold border-b-2 border-green-500 pb-1"
-            >
-              Scores
-            </Link>
-            <Link
-              href="/football/news"
-              className="text-zinc-400 hover:text-white transition-colors"
-            >
-              News
-            </Link>
-            <Link
-              href="/football/favourites"
-              className="text-zinc-400 hover:text-white transition-colors"
-            >
-              Favourites
-            </Link>
+            {/* Navigation moved to sidebar */}
           </nav>
 
           {/* Utility Icons */}

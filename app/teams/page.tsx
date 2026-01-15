@@ -3,10 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import FootballHeader from '@/components/football/FootballHeader';
+import FootballSidebar from '@/components/football/FootballSidebar';
 import TeamList from '@/components/teams/TeamList';
 import TeamForm from '@/components/teams/TeamForm';
 import { Team, getAllTeams, createTeam, updateTeam, deleteTeam } from '@/lib/teamService';
 import { getSupabaseUserId } from '@/lib/userService';
+import Toast from '@/components/ui/Toast';
 
 export type { Team };
 
@@ -18,6 +20,19 @@ export default function TeamsPage() {
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info'; isVisible: boolean }>({
+    message: '',
+    type: 'success',
+    isVisible: false,
+  });
+
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+    setToast({ message, type, isVisible: true });
+  };
+
+  const hideToast = () => {
+    setToast((prev) => ({ ...prev, isVisible: false }));
+  };
 
   // Load teams from Supabase
   useEffect(() => {
@@ -50,14 +65,19 @@ export default function TeamsPage() {
       });
       if (newTeam) {
         setTeams([newTeam, ...teams]);
+        showToast('Team created successfully!', 'success');
         return true;
       } else {
-        setError('Failed to create team. Please check console for details.');
+        const errorMsg = 'Failed to create team. Please check console for details.';
+        setError(errorMsg);
+        showToast(errorMsg, 'error');
         return false;
       }
     } catch (err) {
       console.error('Error creating team:', err);
-      setError(`Failed to create team: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      const errorMsg = `Failed to create team: ${err instanceof Error ? err.message : 'Unknown error'}`;
+      setError(errorMsg);
+      showToast(errorMsg, 'error');
       return false;
     }
   };
@@ -70,14 +90,19 @@ export default function TeamsPage() {
       const updatedTeam = await updateTeam(editingTeam.id, teamData);
       if (updatedTeam) {
         setTeams(teams.map((team) => (team.id === editingTeam.id ? updatedTeam : team)));
+        showToast('Team updated successfully!', 'success');
         return true;
       } else {
-        setError('Failed to update team. Please try again.');
+        const errorMsg = 'Failed to update team. Please try again.';
+        setError(errorMsg);
+        showToast(errorMsg, 'error');
         return false;
       }
     } catch (err) {
       console.error('Error updating team:', err);
-      setError('Failed to update team. Please try again.');
+      const errorMsg = 'Failed to update team. Please try again.';
+      setError(errorMsg);
+      showToast(errorMsg, 'error');
       return false;
     }
   };
@@ -92,12 +117,17 @@ export default function TeamsPage() {
       const success = await deleteTeam(teamId);
       if (success) {
         setTeams(teams.filter((team) => team.id !== teamId));
+        showToast('Team deleted successfully!', 'success');
       } else {
-        setError('Failed to delete team. Please try again.');
+        const errorMsg = 'Failed to delete team. Please try again.';
+        setError(errorMsg);
+        showToast(errorMsg, 'error');
       }
     } catch (err) {
       console.error('Error deleting team:', err);
-      setError('Failed to delete team. Please try again.');
+      const errorMsg = 'Failed to delete team. Please try again.';
+      setError(errorMsg);
+      showToast(errorMsg, 'error');
     }
   };
 
@@ -135,7 +165,9 @@ export default function TeamsPage() {
   return (
     <div className="min-h-screen bg-zinc-900 text-white">
       <FootballHeader />
-      <div className="container mx-auto px-6 py-8">
+      <div className="flex">
+        <FootballSidebar />
+        <div className="flex-1 container mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold">Team Management</h1>
           <button
@@ -171,6 +203,15 @@ export default function TeamsPage() {
           team={editingTeam}
           mode={formMode}
         />
+
+        {/* Toast Notification */}
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          isVisible={toast.isVisible}
+          onClose={hideToast}
+        />
+        </div>
       </div>
     </div>
   );

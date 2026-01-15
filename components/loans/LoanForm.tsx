@@ -8,6 +8,14 @@ import { getAllMatches } from '@/lib/matchService';
 import { Team } from '@/lib/teamService';
 import { Match } from '@/lib/matchService';
 
+interface LoanFormProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (loan: Omit<Loan, 'id' | 'team' | 'match' | 'createdAt' | 'updatedAt'>) => void;
+  loan?: Loan | null;
+  mode: 'create' | 'edit';
+}
+
 export default function LoanForm({
   isOpen,
   onClose,
@@ -17,6 +25,7 @@ export default function LoanForm({
 }: LoanFormProps) {
   const [teams, setTeams] = useState<Team[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
+  const [filteredMatches, setFilteredMatches] = useState<Match[]>([]);
   const [loadingData, setLoadingData] = useState(false);
   const [formData, setFormData] = useState({
     teamId: '',
@@ -35,6 +44,16 @@ export default function LoanForm({
         ]);
         setTeams(teamsData);
         setMatches(matchesData);
+        
+        // Initially filter to show only upcoming matches
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const upcomingMatches = matchesData.filter((match) => {
+          const matchDate = new Date(match.matchDate);
+          const matchDateOnly = new Date(matchDate.getFullYear(), matchDate.getMonth(), matchDate.getDate());
+          return matchDateOnly >= today && match.status === 'NS';
+        });
+        setFilteredMatches(upcomingMatches);
       } catch (error) {
         console.error('Error loading data:', error);
       } finally {
@@ -46,6 +65,49 @@ export default function LoanForm({
       loadData();
     }
   }, [isOpen]);
+
+  // Filter matches when team is selected
+  useEffect(() => {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    // Filter matches that haven't started yet (matchDate >= today and status is 'NS')
+    const upcomingMatches = matches.filter((match) => {
+      const matchDate = new Date(match.matchDate);
+      const matchDateOnly = new Date(matchDate.getFullYear(), matchDate.getMonth(), matchDate.getDate());
+      
+      // Match hasn't started if:
+      // 1. Match date is in the future, OR
+      // 2. Match date is today and status is 'NS' (Not Started)
+      return matchDateOnly >= today && match.status === 'NS';
+    });
+
+    if (formData.teamId) {
+      // Filter matches where the selected team is either home or away team AND match hasn't started
+      const filtered = upcomingMatches.filter(
+        (match) =>
+          match.homeTeam.id === formData.teamId ||
+          match.awayTeam.id === formData.teamId
+      );
+      setFilteredMatches(filtered);
+
+      // Reset matchId if current selection is not in filtered list
+      if (formData.matchId) {
+        const isCurrentMatchValid = filtered.some(
+          (match) => match.id === formData.matchId
+        );
+        if (!isCurrentMatchValid) {
+          setFormData((prev) => ({ ...prev, matchId: '' }));
+        }
+      }
+    } else {
+      // If no team selected, show all upcoming matches
+      setFilteredMatches(upcomingMatches);
+      if (formData.matchId) {
+        setFormData((prev) => ({ ...prev, matchId: '' }));
+      }
+    }
+  }, [formData.teamId, matches]);
 
   useEffect(() => {
     if (loan && mode === 'edit') {
@@ -143,9 +205,12 @@ export default function LoanForm({
                   }
                   className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
                   required
+                  disabled={!formData.teamId}
                 >
-                  <option value="">Select match</option>
-                  {matches.map((match) => (
+                  <option value="">
+                    {formData.teamId ? 'Select match' : 'Select team first'}
+                  </option>
+                  {filteredMatches.map((match) => (
                     <option key={match.id} value={match.id}>
                       {match.homeTeam.teamName} vs {match.awayTeam.teamName} - {new Date(match.matchDate).toLocaleDateString()}
                     </option>
@@ -154,11 +219,21 @@ export default function LoanForm({
                 {formData.matchId && (
                   <p className="mt-2 text-xs text-zinc-400">
                     {(() => {
-                      const selectedMatch = matches.find(m => m.id === formData.matchId);
+                      const selectedMatch = filteredMatches.find(m => m.id === formData.matchId);
                       return selectedMatch
                         ? `${selectedMatch.homeTeam.teamName} vs ${selectedMatch.awayTeam.teamName} on ${new Date(selectedMatch.matchDate).toLocaleDateString()}${selectedMatch.location ? ` at ${selectedMatch.location}` : ''}`
                         : '';
                     })()}
+                  </p>
+                )}
+                {formData.teamId && filteredMatches.length === 0 && (
+                  <p className="mt-2 text-xs text-yellow-400">
+                    No upcoming matches found for this team.
+                  </p>
+                )}
+                {!formData.teamId && filteredMatches.length === 0 && (
+                  <p className="mt-2 text-xs text-yellow-400">
+                    No upcoming matches available.
                   </p>
                 )}
               </div>

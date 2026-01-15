@@ -7,10 +7,12 @@ import MatchCard from './MatchCard';
 import MatchForm from './MatchForm';
 import { Match, getAllMatches, getMatchesByDate, createMatch, updateMatch, deleteMatch } from '@/lib/matchService';
 import { getSupabaseUserId } from '@/lib/userService';
+import Toast from '@/components/ui/Toast';
 
 interface MatchScheduleProps {
   selectedTeam: string | null;
   searchQuery: string;
+  onSearchChange?: (query: string) => void;
 }
 
 // Helper function to get date string in YYYY-MM-DD format
@@ -28,6 +30,7 @@ const getDateStringFromToday = (days: number): string => {
 export default function MatchSchedule({
   selectedTeam,
   searchQuery,
+  onSearchChange,
 }: MatchScheduleProps) {
   const { data: session } = useSession();
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -37,6 +40,11 @@ export default function MatchSchedule({
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info'; isVisible: boolean }>({
+    message: '',
+    type: 'success',
+    isVisible: false,
+  });
 
   // Load matches when component mounts or date changes
   useEffect(() => {
@@ -58,6 +66,14 @@ export default function MatchSchedule({
     }
   };
 
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+    setToast({ message, type, isVisible: true });
+  };
+
+  const hideToast = () => {
+    setToast((prev) => ({ ...prev, isVisible: false }));
+  };
+
   // CRUD Operations
   const handleCreateMatch = async (matchData: Omit<Match, 'id' | 'homeTeam' | 'awayTeam' | 'createdAt' | 'updatedAt'>) => {
     setError(null);
@@ -72,14 +88,19 @@ export default function MatchSchedule({
       if (newMatch) {
         // Reload matches to get updated list
         await loadMatches();
+        showToast('Match created successfully!', 'success');
         return true;
       } else {
-        setError('Failed to create match. Please try again.');
+        const errorMsg = 'Failed to create match. Please try again.';
+        setError(errorMsg);
+        showToast(errorMsg, 'error');
         return false;
       }
     } catch (err) {
       console.error('Error creating match:', err);
-      setError('Failed to create match. Please try again.');
+      const errorMsg = 'Failed to create match. Please try again.';
+      setError(errorMsg);
+      showToast(errorMsg, 'error');
       return false;
     }
   };
@@ -93,14 +114,19 @@ export default function MatchSchedule({
       if (updatedMatch) {
         // Reload matches to get updated list
         await loadMatches();
+        showToast('Match updated successfully!', 'success');
         return true;
       } else {
-        setError('Failed to update match. Please try again.');
+        const errorMsg = 'Failed to update match. Please try again.';
+        setError(errorMsg);
+        showToast(errorMsg, 'error');
         return false;
       }
     } catch (err) {
       console.error('Error updating match:', err);
-      setError('Failed to update match. Please try again.');
+      const errorMsg = 'Failed to update match. Please try again.';
+      setError(errorMsg);
+      showToast(errorMsg, 'error');
       return false;
     }
   };
@@ -315,6 +341,14 @@ export default function MatchSchedule({
         onSubmit={handleFormSubmit}
         match={editingMatch}
         mode={formMode}
+      />
+
+      {/* Toast Notification */}
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        isVisible={toast.isVisible}
+        onClose={hideToast}
       />
     </div>
   );
