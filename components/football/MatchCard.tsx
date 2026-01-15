@@ -1,0 +1,71 @@
+'use client';
+
+import { Star } from 'lucide-react';
+import { useState } from 'react';
+
+interface MatchCardProps {
+  homeTeam: string;
+  awayTeam: string;
+  homeScore: number;
+  awayScore: number;
+  status: string;
+  homeLogo?: string;
+  awayLogo?: string;
+  isFavorite?: boolean;
+  onToggleFavorite?: () => void;
+}
+
+export default function MatchCard({
+  homeTeam,
+  awayTeam,
+  homeScore,
+  awayScore,
+  status,
+  homeLogo = '⚽',
+  awayLogo = '⚽',
+  isFavorite = false,
+  onToggleFavorite,
+}: MatchCardProps) {
+  const [favorite, setFavorite] = useState(isFavorite);
+
+  const handleToggleFavorite = () => {
+    setFavorite(!favorite);
+    onToggleFavorite?.();
+  };
+
+  return (
+    <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-700 hover:bg-zinc-800 transition-colors">
+      {/* Status */}
+      <div className="w-12 text-xs text-zinc-400 font-medium">
+        {status}
+      </div>
+
+      {/* Teams and Scores */}
+      <div className="flex-1 flex items-center justify-between">
+        <div className="flex items-center gap-3 flex-1">
+          <span className="text-xl">{homeLogo}</span>
+          <span className="text-white font-medium">{homeTeam}</span>
+        </div>
+        <div className="flex items-center gap-2 mx-4">
+          <span className="text-white font-semibold text-lg">{homeScore}</span>
+          <span className="text-zinc-500">-</span>
+          <span className="text-white font-semibold text-lg">{awayScore}</span>
+        </div>
+        <div className="flex items-center gap-3 flex-1 justify-end">
+          <span className="text-white font-medium">{awayTeam}</span>
+          <span className="text-xl">{awayLogo}</span>
+        </div>
+      </div>
+
+      {/* Favorite Button */}
+      <button
+        onClick={handleToggleFavorite}
+        className="ml-4 text-zinc-400 hover:text-yellow-400 transition-colors"
+      >
+        <Star
+          className={`w-5 h-5 ${favorite ? 'fill-yellow-400 text-yellow-400' : ''}`}
+        />
+      </button>
+    </div>
+  );
+}
