@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS matches (
   league VARCHAR(255) NOT NULL,
   country VARCHAR(255) NOT NULL,
   match_date DATE NOT NULL,
+  match_time TIME DEFAULT '00:00:00',
   location VARCHAR(500),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -20,6 +21,7 @@ CREATE TABLE IF NOT EXISTS matches (
 CREATE INDEX IF NOT EXISTS idx_matches_home_team_id ON matches(home_team_id);
 CREATE INDEX IF NOT EXISTS idx_matches_away_team_id ON matches(away_team_id);
 CREATE INDEX IF NOT EXISTS idx_matches_match_date ON matches(match_date);
+CREATE INDEX IF NOT EXISTS idx_matches_match_time ON matches(match_time);
 CREATE INDEX IF NOT EXISTS idx_matches_status ON matches(status);
 CREATE INDEX IF NOT EXISTS idx_matches_league ON matches(league);
 CREATE INDEX IF NOT EXISTS idx_matches_user_id ON matches(user_id);

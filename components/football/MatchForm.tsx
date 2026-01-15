@@ -2,7 +2,7 @@
 
 import { X } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { Match } from '@/lib/matchService';
+import { Match, isMatchStarted } from '@/lib/matchService';
 import { getAllTeams } from '@/lib/teamService';
 import { Team } from '@/lib/teamService';
 
@@ -30,12 +30,15 @@ export default function MatchForm({
     awayTeamId: '',
     homeScore: 0,
     awayScore: 0,
-    status: 'FT',
+    status: 'NS',
     league: '',
     country: '',
     matchDate: new Date().toISOString().split('T')[0],
+    matchTime: '00:00',
     location: '',
   });
+  
+  const [isMatchStartedState, setIsMatchStartedState] = useState(false);
 
   useEffect(() => {
     const loadTeams = async () => {
@@ -57,6 +60,9 @@ export default function MatchForm({
 
   useEffect(() => {
     if (match && mode === 'edit') {
+      const matchStarted = isMatchStarted(match.matchDate, match.matchTime);
+      setIsMatchStartedState(matchStarted);
+      
       setFormData({
         homeTeamId: match.homeTeamId,
         awayTeamId: match.awayTeamId,
@@ -66,28 +72,94 @@ export default function MatchForm({
         league: match.league,
         country: match.country,
         matchDate: match.matchDate || new Date().toISOString().split('T')[0],
+        matchTime: match.matchTime || '00:00',
         location: match.location || '',
       });
     } else {
+      setIsMatchStartedState(false);
       setFormData({
         homeTeamId: '',
         awayTeamId: '',
         homeScore: 0,
         awayScore: 0,
-        status: 'FT',
+        status: 'NS',
         league: '',
         country: '',
         matchDate: new Date().toISOString().split('T')[0],
+        matchTime: '00:00',
         location: '',
       });
     }
   }, [match, mode, isOpen]);
+  
+  // Update isMatchStartedState when formData changes
+  useEffect(() => {
+    if (mode === 'edit' && formData.matchDate) {
+      const matchStarted = isMatchStarted(formData.matchDate, formData.matchTime);
+      setIsMatchStartedState(matchStarted);
+    }
+  }, [formData.matchDate, formData.matchTime, mode]);
 
   if (!isOpen) return null;
 
+  // Get current date and time for validation
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    const currentDate = now.toISOString().split('T')[0];
+    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+    return { currentDate, currentTime };
+  };
+
+  // Validate date and time for create mode
+  const validateDateTime = (): boolean => {
+    if (mode === 'create') {
+      const { currentDate, currentTime } = getCurrentDateTime();
+      
+      // Check if date is in the past
+      if (formData.matchDate < currentDate) {
+        alert('Match date cannot be in the past. Please select today or a future date.');
+        return false;
+      }
+      
+      // If date is today, check if time is in the past
+      if (formData.matchDate === currentDate && formData.matchTime < currentTime) {
+        alert('Match time cannot be in the past. Please select a future time.');
+        return false;
+      }
+    }
+    return true;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    
+    // Validate date and time for create mode
+    if (!validateDateTime()) {
+      return;
+    }
+    
+    // If match has started, only allow updating score and status
+    if (isMatchStartedState && mode === 'edit') {
+      onSubmit({
+        homeTeamId: match?.homeTeamId || '',
+        awayTeamId: match?.awayTeamId || '',
+        homeScore: formData.homeScore,
+        awayScore: formData.awayScore,
+        status: formData.status,
+        league: match?.league || '',
+        country: match?.country || '',
+        matchDate: match?.matchDate || '',
+        matchTime: match?.matchTime,
+        location: match?.location,
+      });
+    } else {
+      // Ensure status is NS for create mode
+      const submitData = {
+        ...formData,
+        status: mode === 'create' ? 'NS' : formData.status,
+      };
+      onSubmit(submitData);
+    }
     onClose();
   };
 
@@ -118,53 +190,61 @@ export default function MatchForm({
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            {/* Home Team */}
-            <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
-                Home Team
-              </label>
-              <select
-                value={formData.homeTeamId}
-                onChange={(e) => setFormData({ ...formData, homeTeamId: e.target.value })}
-                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
-                required
-                disabled={loadingTeams}
-              >
-                <option value="">Select home team</option>
-                {teams
-                  .filter((team) => team.id !== formData.awayTeamId)
-                  .map((team) => (
-                    <option key={team.id} value={team.id}>
-                      {team.teamName}
-                    </option>
-                  ))}
-              </select>
-            </div>
+          {!isMatchStartedState && (
+            <div className="grid grid-cols-2 gap-4">
+              {/* Home Team */}
+              <div>
+                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                  Home Team
+                </label>
+                <select
+                  value={formData.homeTeamId}
+                  onChange={(e) => setFormData({ ...formData, homeTeamId: e.target.value })}
+                  className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
+                  required
+                  disabled={loadingTeams}
+                >
+                  <option value="">Select home team</option>
+                  {teams
+                    .filter((team) => team.id !== formData.awayTeamId)
+                    .map((team) => (
+                      <option key={team.id} value={team.id}>
+                        {team.teamName}
+                      </option>
+                    ))}
+                </select>
+              </div>
 
-            {/* Away Team */}
-            <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
-                Away Team
-              </label>
-              <select
-                value={formData.awayTeamId}
-                onChange={(e) => setFormData({ ...formData, awayTeamId: e.target.value })}
-                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
-                required
-                disabled={loadingTeams}
-              >
-                <option value="">Select away team</option>
-                {teams
-                  .filter((team) => team.id !== formData.homeTeamId)
-                  .map((team) => (
-                    <option key={team.id} value={team.id}>
-                      {team.teamName}
-                    </option>
-                  ))}
-              </select>
+              {/* Away Team */}
+              <div>
+                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                  Away Team
+                </label>
+                <select
+                  value={formData.awayTeamId}
+                  onChange={(e) => setFormData({ ...formData, awayTeamId: e.target.value })}
+                  className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
+                  required
+                  disabled={loadingTeams}
+                >
+                  <option value="">Select away team</option>
+                  {teams
+                    .filter((team) => team.id !== formData.homeTeamId)
+                    .map((team) => (
+                      <option key={team.id} value={team.id}>
+                        {team.teamName}
+                      </option>
+                    ))}
+                </select>
+              </div>
             </div>
-          </div>
+          )}
+
+          {isMatchStartedState && mode === 'edit' && (
+            <div className="p-4 bg-yellow-500/20 border border-yellow-500/50 rounded-lg text-yellow-400 text-sm mb-4">
+              Match has started. You can only update the score and status.
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             {/* Home Score */}
@@ -198,85 +278,142 @@ export default function MatchForm({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            {/* League */}
-            <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
-                League
-              </label>
-              <input
-                type="text"
-                value={formData.league}
-                onChange={(e) => setFormData({ ...formData, league: e.target.value })}
-                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
-                placeholder="e.g., Premier League"
-                required
-              />
-            </div>
+          {!isMatchStartedState && (
+            <div className="grid grid-cols-2 gap-4">
+              {/* League */}
+              <div>
+                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                  League
+                </label>
+                <input
+                  type="text"
+                  value={formData.league}
+                  onChange={(e) => setFormData({ ...formData, league: e.target.value })}
+                  className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
+                  placeholder="e.g., Premier League"
+                  required
+                />
+              </div>
 
-            {/* Country */}
-            <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
-                Country
-              </label>
-              <input
-                type="text"
-                value={formData.country}
-                onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
-                placeholder="e.g., England"
-                required
-              />
+              {/* Country */}
+              <div>
+                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                  Country
+                </label>
+                <input
+                  type="text"
+                  value={formData.country}
+                  onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                  className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
+                  placeholder="e.g., England"
+                  required
+                />
+              </div>
             </div>
-          </div>
+          )}
 
-          <div className="grid grid-cols-2 gap-4">
-            {/* Match Date */}
-            <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
-                Match Date
-              </label>
-              <input
-                type="date"
-                value={formData.matchDate}
-                onChange={(e) => setFormData({ ...formData, matchDate: e.target.value })}
-                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
-                required
-              />
+          {!isMatchStartedState && (
+            <div className="grid grid-cols-2 gap-4">
+              {/* Match Date */}
+              <div>
+                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                  Match Date
+                </label>
+                <input
+                  type="date"
+                  value={formData.matchDate}
+                  onChange={(e) => {
+                    const selectedDate = e.target.value;
+                    const { currentDate } = getCurrentDateTime();
+                    
+                    // If creating and selected date is today, ensure time is not in past
+                    if (mode === 'create' && selectedDate === currentDate) {
+                      const { currentTime } = getCurrentDateTime();
+                      if (formData.matchTime < currentTime) {
+                        // Reset time to current time if date is today
+                        setFormData({ 
+                          ...formData, 
+                          matchDate: selectedDate,
+                          matchTime: currentTime 
+                        });
+                        return;
+                      }
+                    }
+                    
+                    setFormData({ ...formData, matchDate: selectedDate });
+                  }}
+                  min={mode === 'create' ? getCurrentDateTime().currentDate : undefined}
+                  className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
+                  required
+                />
+              </div>
+
+              {/* Match Time */}
+              <div>
+                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                  Match Start Time
+                </label>
+                <input
+                  type="time"
+                  value={formData.matchTime}
+                  onChange={(e) => {
+                    const selectedTime = e.target.value;
+                    const { currentDate, currentTime } = getCurrentDateTime();
+                    
+                    // If creating and date is today, ensure time is not in past
+                    if (mode === 'create' && formData.matchDate === currentDate && selectedTime < currentTime) {
+                      alert('Match time cannot be in the past. Please select a future time.');
+                      return;
+                    }
+                    
+                    setFormData({ ...formData, matchTime: selectedTime });
+                  }}
+                  min={mode === 'create' && formData.matchDate === getCurrentDateTime().currentDate ? getCurrentDateTime().currentTime : undefined}
+                  className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
+                  required
+                />
+              </div>
             </div>
+          )}
 
-            {/* Status */}
-            <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
-                Status
-              </label>
-              <select
-                value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
-                required
-              >
-                <option value="FT">Full Time (FT)</option>
-                <option value="LIVE">Live</option>
-                <option value="HT">Half Time (HT)</option>
-                <option value="NS">Not Started (NS)</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Location */}
+          {/* Status - Always visible, can be updated even if match started */}
           <div>
             <label className="block text-sm font-medium text-zinc-300 mb-2">
-              Địa điểm (Location)
+              Status
             </label>
-            <input
-              type="text"
-              value={formData.location}
-              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-              className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
-              placeholder="e.g., Old Trafford, Manchester"
-            />
+            <select
+              value={formData.status}
+              onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+              disabled={mode === 'create'}
+              className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              required
+            >
+              <option value="NS">Not Started (NS)</option>
+              <option value="LIVE">Live</option>
+              <option value="HT">Half Time (HT)</option>
+              <option value="FT">Full Time (FT)</option>
+            </select>
+            {mode === 'create' && (
+              <p className="mt-1 text-xs text-zinc-500">
+                Status is automatically set to "Not Started" for new matches
+              </p>
+            )}
           </div>
+
+          {!isMatchStartedState && (
+            <div>
+              <label className="block text-sm font-medium text-zinc-300 mb-2">
+                Location
+              </label>
+              <input
+                type="text"
+                value={formData.location}
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
+                placeholder="e.g., Old Trafford, Manchester"
+              />
+            </div>
+          )}
 
           {/* Submit Button */}
           <div className="flex gap-4 pt-4">

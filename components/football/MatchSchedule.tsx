@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import { ChevronLeft, ChevronRight, Calendar, Radio, Plus } from 'lucide-react';
 import MatchCard from './MatchCard';
 import MatchForm from './MatchForm';
-import { Match, getAllMatches, getMatchesByDate, createMatch, updateMatch, deleteMatch } from '@/lib/matchService';
+import { Match, getAllMatches, getMatchesByDate, createMatch, updateMatch, deleteMatch, isMatchStarted, shouldAutoSetFullTime, formatElapsedTime, formatMatchStartTime } from '@/lib/matchService';
 import { getSupabaseUserId } from '@/lib/userService';
 import Toast from '@/components/ui/Toast';
 
@@ -58,6 +58,30 @@ export default function MatchSchedule({
       const selectedDateString = getDateString(selectedDate);
       const data = await getMatchesByDate(selectedDateString);
       setMatches(data);
+      
+      // Auto-update match status to FT if 105 minutes have elapsed
+      const matchesToUpdate: { id: string }[] = [];
+      data.forEach((match) => {
+        if (shouldAutoSetFullTime(match.matchDate, match.matchTime, match.status)) {
+          matchesToUpdate.push({ id: match.id });
+        }
+      });
+      
+      if (matchesToUpdate.length > 0) {
+        try {
+          // Update all matches that need status change
+          await Promise.all(
+            matchesToUpdate.map(({ id }) =>
+              updateMatch(id, { status: 'FT' })
+            )
+          );
+          // Reload matches after update
+          const updatedData = await getMatchesByDate(selectedDateString);
+          setMatches(updatedData);
+        } catch (err) {
+          console.error('Error auto-updating match statuses:', err);
+        }
+      }
     } catch (err) {
       console.error('Error loading matches:', err);
       setError('Failed to load matches. Please try again.');
@@ -65,6 +89,46 @@ export default function MatchSchedule({
       setLoading(false);
     }
   };
+  
+  // Auto-check and update status every minute for live matches
+  useEffect(() => {
+    if (matches.length === 0) return;
+    
+    const checkAndUpdateStatuses = async () => {
+      const matchesToUpdate: { id: string }[] = [];
+      
+      // Get current matches from state at the time of check
+      const currentMatches = matches;
+      
+      currentMatches.forEach((match) => {
+        if (shouldAutoSetFullTime(match.matchDate, match.matchTime, match.status)) {
+          matchesToUpdate.push({ id: match.id });
+        }
+      });
+      
+      if (matchesToUpdate.length > 0) {
+        try {
+          // Update all matches that need status change
+          await Promise.all(
+            matchesToUpdate.map(({ id }) =>
+              updateMatch(id, { status: 'FT' })
+            )
+          );
+          // Reload matches after update
+          const selectedDateString = getDateString(selectedDate);
+          const updatedData = await getMatchesByDate(selectedDateString);
+          setMatches(updatedData);
+        } catch (err) {
+          console.error('Error auto-updating match statuses:', err);
+        }
+      }
+    };
+    
+    // Check every minute
+    const interval = setInterval(checkAndUpdateStatuses, 60000);
+    
+    return () => clearInterval(interval);
+  }, [matches.length, selectedDate]); // Only depend on length to avoid infinite loop
 
   const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
     setToast({ message, type, isVisible: true });
@@ -152,9 +216,17 @@ export default function MatchSchedule({
   };
 
   const handleEditMatch = (match: Match) => {
-    setEditingMatch(match);
-    setFormMode('edit');
-    setIsFormOpen(true);
+    const matchStarted = isMatchStarted(match.matchDate, match.matchTime);
+    if (matchStarted) {
+      // If match has started, still allow editing but only for score
+      setEditingMatch(match);
+      setFormMode('edit');
+      setIsFormOpen(true);
+    } else {
+      setEditingMatch(match);
+      setFormMode('edit');
+      setIsFormOpen(true);
+    }
   };
 
   const handleCreateClick = () => {
@@ -316,6 +388,8 @@ export default function MatchSchedule({
                       homeScore={match.homeScore}
                       awayScore={match.awayScore}
                       status={match.status}
+                      matchDate={match.matchDate}
+                      matchTime={match.matchTime}
                       location={match.location}
                       onEdit={() => handleEditMatch(match)}
                       onDelete={() => handleDeleteMatch(match.id)}
