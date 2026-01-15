@@ -1,7 +1,7 @@
 'use client';
 
 import { Edit2, Trash2 } from 'lucide-react';
-import { Loan } from '@/app/loans/page';
+import { Loan } from '@/lib/loanService';
 
 interface LoanListProps {
   loans: Loan[];
@@ -31,10 +31,14 @@ export default function LoanList({ loans, onEdit, onDelete }: LoanListProps) {
     });
   };
 
-  const isMatchStarted = (matchDate: string, matchTime: string): boolean => {
+  const isMatchStarted = (matchDate: string): boolean => {
     const now = new Date();
-    const matchDateTime = new Date(`${matchDate}T${matchTime}`);
-    return now >= matchDateTime;
+    const matchDateObj = new Date(matchDate);
+    // Consider match started if date has passed (at start of day)
+    matchDateObj.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return matchDateObj < today;
   };
 
   if (loans.length === 0) {
@@ -61,7 +65,7 @@ export default function LoanList({ loans, onEdit, onDelete }: LoanListProps) {
                 Match Date
               </th>
               <th className="px-6 py-4 text-left text-sm font-semibold text-zinc-300">
-                Match Time
+                Location
               </th>
               <th className="px-6 py-4 text-left text-sm font-semibold text-zinc-300">
                 Number of Players
@@ -76,7 +80,8 @@ export default function LoanList({ loans, onEdit, onDelete }: LoanListProps) {
           </thead>
           <tbody>
             {loans.map((loan) => {
-              const matchStarted = isMatchStarted(loan.matchDate, loan.matchTime);
+              const matchStarted = isMatchStarted(loan.match.matchDate);
+              const matchInfo = `${loan.match.homeTeam.teamName} vs ${loan.match.awayTeam.teamName}`;
               return (
                 <tr
                   key={loan.id}
@@ -87,13 +92,15 @@ export default function LoanList({ loans, onEdit, onDelete }: LoanListProps) {
                   }`}
                 >
                   <td className="px-6 py-4 text-white font-medium">
-                    {loan.teamName}
+                    {loan.team.teamName}
                   </td>
-                  <td className="px-6 py-4 text-zinc-300">{loan.matchInfo}</td>
+                  <td className="px-6 py-4 text-zinc-300">{matchInfo}</td>
                   <td className="px-6 py-4 text-zinc-300">
-                    {formatDate(loan.matchDate)}
+                    {formatDate(loan.match.matchDate)}
                   </td>
-                  <td className="px-6 py-4 text-zinc-300">{loan.matchTime}</td>
+                  <td className="px-6 py-4 text-zinc-300">
+                    {loan.match.location || '-'}
+                  </td>
                   <td className="px-6 py-4 text-zinc-300">
                     {loan.numberOfPlayers} {loan.numberOfPlayers === 1 ? 'player' : 'players'}
                   </td>

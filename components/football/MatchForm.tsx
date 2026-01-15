@@ -2,25 +2,16 @@
 
 import { X } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { Match } from '@/lib/matchService';
+import { getAllTeams } from '@/lib/teamService';
+import { Team } from '@/lib/teamService';
 
-export interface Match {
-  id: string;
-  homeTeam: string;
-  awayTeam: string;
-  homeScore: number;
-  awayScore: number;
-  status: string;
-  league: string;
-  country: string;
-  matchDate: string; // ISO date string (YYYY-MM-DD)
-  homeLogo?: string;
-  awayLogo?: string;
-}
+export type { Match };
 
 interface MatchFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (match: Omit<Match, 'id'>) => void;
+  onSubmit: (match: Omit<Match, 'id' | 'homeTeam' | 'awayTeam' | 'createdAt' | 'updatedAt'>) => void;
   match?: Match | null;
   mode: 'create' | 'edit';
 }
@@ -32,45 +23,62 @@ export default function MatchForm({
   match,
   mode,
 }: MatchFormProps) {
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [loadingTeams, setLoadingTeams] = useState(false);
   const [formData, setFormData] = useState({
-    homeTeam: '',
-    awayTeam: '',
+    homeTeamId: '',
+    awayTeamId: '',
     homeScore: 0,
     awayScore: 0,
     status: 'FT',
     league: '',
     country: '',
-    matchDate: new Date().toISOString().split('T')[0], // Today's date in YYYY-MM-DD format
-    homeLogo: '⚽',
-    awayLogo: '⚽',
+    matchDate: new Date().toISOString().split('T')[0],
+    location: '',
   });
+
+  useEffect(() => {
+    const loadTeams = async () => {
+      setLoadingTeams(true);
+      try {
+        const data = await getAllTeams();
+        setTeams(data);
+      } catch (error) {
+        console.error('Error loading teams:', error);
+      } finally {
+        setLoadingTeams(false);
+      }
+    };
+
+    if (isOpen) {
+      loadTeams();
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (match && mode === 'edit') {
       setFormData({
-        homeTeam: match.homeTeam,
-        awayTeam: match.awayTeam,
+        homeTeamId: match.homeTeamId,
+        awayTeamId: match.awayTeamId,
         homeScore: match.homeScore,
         awayScore: match.awayScore,
         status: match.status,
         league: match.league,
         country: match.country,
         matchDate: match.matchDate || new Date().toISOString().split('T')[0],
-        homeLogo: match.homeLogo || '⚽',
-        awayLogo: match.awayLogo || '⚽',
+        location: match.location || '',
       });
     } else {
       setFormData({
-        homeTeam: '',
-        awayTeam: '',
+        homeTeamId: '',
+        awayTeamId: '',
         homeScore: 0,
         awayScore: 0,
         status: 'FT',
         league: '',
         country: '',
         matchDate: new Date().toISOString().split('T')[0],
-        homeLogo: '⚽',
-        awayLogo: '⚽',
+        location: '',
       });
     }
   }, [match, mode, isOpen]);
@@ -116,14 +124,22 @@ export default function MatchForm({
               <label className="block text-sm font-medium text-zinc-300 mb-2">
                 Home Team
               </label>
-              <input
-                type="text"
-                value={formData.homeTeam}
-                onChange={(e) => setFormData({ ...formData, homeTeam: e.target.value })}
-                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
-                placeholder="Home Team Name"
+              <select
+                value={formData.homeTeamId}
+                onChange={(e) => setFormData({ ...formData, homeTeamId: e.target.value })}
+                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
                 required
-              />
+                disabled={loadingTeams}
+              >
+                <option value="">Select home team</option>
+                {teams
+                  .filter((team) => team.id !== formData.awayTeamId)
+                  .map((team) => (
+                    <option key={team.id} value={team.id}>
+                      {team.teamName}
+                    </option>
+                  ))}
+              </select>
             </div>
 
             {/* Away Team */}
@@ -131,14 +147,22 @@ export default function MatchForm({
               <label className="block text-sm font-medium text-zinc-300 mb-2">
                 Away Team
               </label>
-              <input
-                type="text"
-                value={formData.awayTeam}
-                onChange={(e) => setFormData({ ...formData, awayTeam: e.target.value })}
-                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
-                placeholder="Away Team Name"
+              <select
+                value={formData.awayTeamId}
+                onChange={(e) => setFormData({ ...formData, awayTeamId: e.target.value })}
+                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
                 required
-              />
+                disabled={loadingTeams}
+              >
+                <option value="">Select away team</option>
+                {teams
+                  .filter((team) => team.id !== formData.homeTeamId)
+                  .map((team) => (
+                    <option key={team.id} value={team.id}>
+                      {team.teamName}
+                    </option>
+                  ))}
+              </select>
             </div>
           </div>
 
@@ -238,6 +262,20 @@ export default function MatchForm({
                 <option value="NS">Not Started (NS)</option>
               </select>
             </div>
+          </div>
+
+          {/* Location */}
+          <div>
+            <label className="block text-sm font-medium text-zinc-300 mb-2">
+              Địa điểm (Location)
+            </label>
+            <input
+              type="text"
+              value={formData.location}
+              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
+              placeholder="e.g., Old Trafford, Manchester"
+            />
           </div>
 
           {/* Submit Button */}

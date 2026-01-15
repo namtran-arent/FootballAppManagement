@@ -2,34 +2,11 @@
 
 import { X } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { Loan } from '@/app/loans/page';
-
-interface LoanFormProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (loan: Omit<Loan, 'id'>) => void;
-  loan?: Loan | null;
-  mode: 'create' | 'edit';
-}
-
-const TEAMS = [
-  'Manchester United',
-  'Liverpool',
-  'Arsenal',
-  'Manchester City',
-  'Chelsea',
-  'Tottenham',
-  'Real Madrid',
-  'Barcelona',
-  'Bayern Munich',
-  'PSG',
-  'Bayern Munich',
-  'Borussia Dortmund',
-  'Inter Milan',
-  'AC Milan',
-  'Juventus',
-  'Napoli',
-];
+import { Loan } from '@/lib/loanService';
+import { getAllTeams } from '@/lib/teamService';
+import { getAllMatches } from '@/lib/matchService';
+import { Team } from '@/lib/teamService';
+import { Match } from '@/lib/matchService';
 
 export default function LoanForm({
   isOpen,
@@ -38,34 +15,50 @@ export default function LoanForm({
   loan,
   mode,
 }: LoanFormProps) {
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [loadingData, setLoadingData] = useState(false);
   const [formData, setFormData] = useState({
-    teamName: '',
+    teamId: '',
     matchId: '',
-    matchInfo: '',
-    matchDate: new Date().toISOString().split('T')[0],
-    matchTime: '15:00',
     numberOfPlayers: 1,
     status: 'pending' as Loan['status'],
   });
 
   useEffect(() => {
+    const loadData = async () => {
+      setLoadingData(true);
+      try {
+        const [teamsData, matchesData] = await Promise.all([
+          getAllTeams(),
+          getAllMatches(),
+        ]);
+        setTeams(teamsData);
+        setMatches(matchesData);
+      } catch (error) {
+        console.error('Error loading data:', error);
+      } finally {
+        setLoadingData(false);
+      }
+    };
+
+    if (isOpen) {
+      loadData();
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
     if (loan && mode === 'edit') {
       setFormData({
-        teamName: loan.teamName,
+        teamId: loan.teamId,
         matchId: loan.matchId,
-        matchInfo: loan.matchInfo,
-        matchDate: loan.matchDate,
-        matchTime: loan.matchTime,
         numberOfPlayers: loan.numberOfPlayers,
         status: loan.status,
       });
     } else {
       setFormData({
-        teamName: '',
+        teamId: '',
         matchId: '',
-        matchInfo: '',
-        matchDate: new Date().toISOString().split('T')[0],
-        matchTime: '15:00',
         numberOfPlayers: 1,
         status: 'pending',
       });
@@ -112,78 +105,65 @@ export default function LoanForm({
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Team Name */}
-          <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">
-              Team Name
-            </label>
-            <select
-              value={formData.teamName}
-              onChange={(e) =>
-                setFormData({ ...formData, teamName: e.target.value })
-              }
-              className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
-              required
-            >
-              <option value="">Select team</option>
-              {TEAMS.map((team) => (
-                <option key={team} value={team}>
-                  {team}
-                </option>
-              ))}
-            </select>
-          </div>
+          {loadingData ? (
+            <div className="text-center py-8 text-zinc-400">Loading teams and matches...</div>
+          ) : (
+            <>
+              {/* Team Selection */}
+              <div>
+                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                  Team
+                </label>
+                <select
+                  value={formData.teamId}
+                  onChange={(e) =>
+                    setFormData({ ...formData, teamId: e.target.value })
+                  }
+                  className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
+                  required
+                >
+                  <option value="">Select team</option>
+                  {teams.map((team) => (
+                    <option key={team.id} value={team.id}>
+                      {team.teamName}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-          {/* Match Info */}
-          <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">
-              Match (e.g., "Team A vs Team B")
-            </label>
-            <input
-              type="text"
-              value={formData.matchInfo}
-              onChange={(e) =>
-                setFormData({ ...formData, matchInfo: e.target.value })
-              }
-              className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
-              placeholder="e.g., Manchester United vs Liverpool"
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            {/* Match Date */}
-            <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
-                Match Date
-              </label>
-              <input
-                type="date"
-                value={formData.matchDate}
-                onChange={(e) =>
-                  setFormData({ ...formData, matchDate: e.target.value })
-                }
-                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
-                required
-              />
-            </div>
-
-            {/* Match Time */}
-            <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
-                Match Time
-              </label>
-              <input
-                type="time"
-                value={formData.matchTime}
-                onChange={(e) =>
-                  setFormData({ ...formData, matchTime: e.target.value })
-                }
-                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
-                required
-              />
-            </div>
-          </div>
+              {/* Match Selection */}
+              <div>
+                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                  Match
+                </label>
+                <select
+                  value={formData.matchId}
+                  onChange={(e) =>
+                    setFormData({ ...formData, matchId: e.target.value })
+                  }
+                  className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
+                  required
+                >
+                  <option value="">Select match</option>
+                  {matches.map((match) => (
+                    <option key={match.id} value={match.id}>
+                      {match.homeTeam.teamName} vs {match.awayTeam.teamName} - {new Date(match.matchDate).toLocaleDateString()}
+                    </option>
+                  ))}
+                </select>
+                {formData.matchId && (
+                  <p className="mt-2 text-xs text-zinc-400">
+                    {(() => {
+                      const selectedMatch = matches.find(m => m.id === formData.matchId);
+                      return selectedMatch
+                        ? `${selectedMatch.homeTeam.teamName} vs ${selectedMatch.awayTeam.teamName} on ${new Date(selectedMatch.matchDate).toLocaleDateString()}${selectedMatch.location ? ` at ${selectedMatch.location}` : ''}`
+                        : '';
+                    })()}
+                  </p>
+                )}
+              </div>
+            </>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             {/* Number of Players */}

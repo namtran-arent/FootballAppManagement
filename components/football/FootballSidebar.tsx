@@ -19,9 +19,7 @@ export default function FootballSidebar({
   const router = useRouter();
 
   const handleTeamsClick = () => {
-    // TODO: Navigate to teams page
-    // router.push('/teams');
-    console.log('Navigate to teams page');
+    router.push('/teams');
   };
 
   const handleNewsClick = () => {

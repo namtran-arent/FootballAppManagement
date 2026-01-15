@@ -1,5 +1,6 @@
 import { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
+import { createOrUpdateUser } from './userService';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -9,6 +10,23 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    async signIn({ user, account }) {
+      // Save user to Supabase database on first login
+      if (user && account) {
+        try {
+          await createOrUpdateUser({
+            id: user.id,
+            email: user.email || '',
+            name: user.name || null,
+            image: user.image || null,
+          });
+        } catch (error) {
+          console.error('Error saving user to database:', error);
+          // Don't block sign in if database save fails
+        }
+      }
+      return true;
+    },
     async jwt({ token, user, account }) {
       // Persist the OAuth access_token to the token right after signin
       if (account) {
