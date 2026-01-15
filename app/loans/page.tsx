@@ -46,6 +46,39 @@ export default function LoansPage() {
     loadLoans();
   }, []);
 
+  // Auto-update loan status to 'completed' when match finishes
+  useEffect(() => {
+    const updateCompletedLoans = async () => {
+      const loansToUpdate = loans.filter((loan) => {
+        // Check if match is finished (status = 'FT') but loan status is not 'completed'
+        return (
+          loan.match.status === 'FT' &&
+          loan.status !== 'completed'
+        );
+      });
+
+      if (loansToUpdate.length > 0) {
+        try {
+          // Update all loans with finished matches to 'completed'
+          const updatePromises = loansToUpdate.map((loan) =>
+            updateLoan(loan.id, { status: 'completed' })
+          );
+          await Promise.all(updatePromises);
+          
+          // Reload loans to reflect changes
+          await loadLoans();
+        } catch (err) {
+          console.error('Error auto-updating loan statuses:', err);
+        }
+      }
+    };
+
+    if (loans.length > 0 && !loading) {
+      updateCompletedLoans();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loans.length, selectedDate]);
+
   const loadLoans = async () => {
     setLoading(true);
     setError(null);

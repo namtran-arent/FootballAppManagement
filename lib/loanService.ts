@@ -8,13 +8,17 @@ export interface Loan {
     id: string;
     teamName: string;
     avatarUrl?: string;
+    captainName?: string;
+    captainPhone?: string;
   };
   match: {
     id: string;
     homeTeam: { teamName: string; avatarUrl?: string };
     awayTeam: { teamName: string; avatarUrl?: string };
     matchDate: string;
+    matchTime?: string;
     location?: string;
+    status?: string;
   };
   numberOfPlayers: number;
   status: 'active' | 'completed' | 'pending';
@@ -53,6 +57,8 @@ function mapLoanFromDb(dbLoan: any): Loan {
       id: dbLoan.team?.id || dbLoan.team_id,
       teamName: dbLoan.team?.team_name || '',
       avatarUrl: dbLoan.team?.avatar_url || undefined,
+      captainName: dbLoan.team?.captain_name || undefined,
+      captainPhone: dbLoan.team?.captain_phone || undefined,
     },
     match: {
       id: dbLoan.match?.id || dbLoan.match_id,
@@ -89,11 +95,13 @@ export async function getAllLoans(): Promise<Loan[]> {
       .from('loans')
       .select(`
         *,
-        team:teams!loans_team_id_fkey(id, team_name, avatar_url),
+        team:teams!loans_team_id_fkey(id, team_name, avatar_url, captain_name, captain_phone),
         match:matches!loans_match_id_fkey(
           id,
           match_date,
+          match_time,
           location,
+          status,
           home_team:teams!matches_home_team_id_fkey(id, team_name, avatar_url),
           away_team:teams!matches_away_team_id_fkey(id, team_name, avatar_url)
         )
@@ -126,11 +134,13 @@ export async function getLoanById(id: string): Promise<Loan | null> {
       .from('loans')
       .select(`
         *,
-        team:teams!loans_team_id_fkey(id, team_name, avatar_url),
+        team:teams!loans_team_id_fkey(id, team_name, avatar_url, captain_name, captain_phone),
         match:matches!loans_match_id_fkey(
           id,
           match_date,
+          match_time,
           location,
+          status,
           home_team:teams!matches_home_team_id_fkey(id, team_name, avatar_url),
           away_team:teams!matches_away_team_id_fkey(id, team_name, avatar_url)
         )
@@ -173,11 +183,13 @@ export async function createLoan(loan: Omit<Loan, 'id' | 'createdAt' | 'updatedA
       .insert([loanInsert])
       .select(`
         *,
-        team:teams!loans_team_id_fkey(id, team_name, avatar_url),
+        team:teams!loans_team_id_fkey(id, team_name, avatar_url, captain_name, captain_phone),
         match:matches!loans_match_id_fkey(
           id,
           match_date,
+          match_time,
           location,
+          status,
           home_team:teams!matches_home_team_id_fkey(id, team_name, avatar_url),
           away_team:teams!matches_away_team_id_fkey(id, team_name, avatar_url)
         )
@@ -219,11 +231,13 @@ export async function updateLoan(id: string, loan: Partial<Omit<Loan, 'id' | 'cr
       .eq('id', id)
       .select(`
         *,
-        team:teams!loans_team_id_fkey(id, team_name, avatar_url),
+        team:teams!loans_team_id_fkey(id, team_name, avatar_url, captain_name, captain_phone),
         match:matches!loans_match_id_fkey(
           id,
           match_date,
+          match_time,
           location,
+          status,
           home_team:teams!matches_home_team_id_fkey(id, team_name, avatar_url),
           away_team:teams!matches_away_team_id_fkey(id, team_name, avatar_url)
         )
