@@ -1,0 +1,263 @@
+'use client';
+
+import { X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+
+export interface Match {
+  id: string;
+  homeTeam: string;
+  awayTeam: string;
+  homeScore: number;
+  awayScore: number;
+  status: string;
+  league: string;
+  country: string;
+  matchDate: string; // ISO date string (YYYY-MM-DD)
+  homeLogo?: string;
+  awayLogo?: string;
+}
+
+interface MatchFormProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (match: Omit<Match, 'id'>) => void;
+  match?: Match | null;
+  mode: 'create' | 'edit';
+}
+
+export default function MatchForm({
+  isOpen,
+  onClose,
+  onSubmit,
+  match,
+  mode,
+}: MatchFormProps) {
+  const [formData, setFormData] = useState({
+    homeTeam: '',
+    awayTeam: '',
+    homeScore: 0,
+    awayScore: 0,
+    status: 'FT',
+    league: '',
+    country: '',
+    matchDate: new Date().toISOString().split('T')[0], // Today's date in YYYY-MM-DD format
+    homeLogo: '⚽',
+    awayLogo: '⚽',
+  });
+
+  useEffect(() => {
+    if (match && mode === 'edit') {
+      setFormData({
+        homeTeam: match.homeTeam,
+        awayTeam: match.awayTeam,
+        homeScore: match.homeScore,
+        awayScore: match.awayScore,
+        status: match.status,
+        league: match.league,
+        country: match.country,
+        matchDate: match.matchDate || new Date().toISOString().split('T')[0],
+        homeLogo: match.homeLogo || '⚽',
+        awayLogo: match.awayLogo || '⚽',
+      });
+    } else {
+      setFormData({
+        homeTeam: '',
+        awayTeam: '',
+        homeScore: 0,
+        awayScore: 0,
+        status: 'FT',
+        league: '',
+        country: '',
+        matchDate: new Date().toISOString().split('T')[0],
+        homeLogo: '⚽',
+        awayLogo: '⚽',
+      });
+    }
+  }, [match, mode, isOpen]);
+
+  if (!isOpen) return null;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={onClose}
+      ></div>
+
+      {/* Modal */}
+      <div className="relative bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl w-full max-w-2xl p-8 z-10 max-h-[90vh] overflow-y-auto">
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors"
+        >
+          <X className="w-6 h-6" />
+        </button>
+
+        {/* Header */}
+        <div className="mb-6">
+          <h2 className="text-3xl font-bold text-white mb-2">
+            {mode === 'create' ? 'Create New Match' : 'Edit Match'}
+          </h2>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            {/* Home Team */}
+            <div>
+              <label className="block text-sm font-medium text-zinc-300 mb-2">
+                Home Team
+              </label>
+              <input
+                type="text"
+                value={formData.homeTeam}
+                onChange={(e) => setFormData({ ...formData, homeTeam: e.target.value })}
+                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
+                placeholder="Home Team Name"
+                required
+              />
+            </div>
+
+            {/* Away Team */}
+            <div>
+              <label className="block text-sm font-medium text-zinc-300 mb-2">
+                Away Team
+              </label>
+              <input
+                type="text"
+                value={formData.awayTeam}
+                onChange={(e) => setFormData({ ...formData, awayTeam: e.target.value })}
+                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
+                placeholder="Away Team Name"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            {/* Home Score */}
+            <div>
+              <label className="block text-sm font-medium text-zinc-300 mb-2">
+                Home Score
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={formData.homeScore}
+                onChange={(e) => setFormData({ ...formData, homeScore: parseInt(e.target.value) || 0 })}
+                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
+                required
+              />
+            </div>
+
+            {/* Away Score */}
+            <div>
+              <label className="block text-sm font-medium text-zinc-300 mb-2">
+                Away Score
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={formData.awayScore}
+                onChange={(e) => setFormData({ ...formData, awayScore: parseInt(e.target.value) || 0 })}
+                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            {/* League */}
+            <div>
+              <label className="block text-sm font-medium text-zinc-300 mb-2">
+                League
+              </label>
+              <input
+                type="text"
+                value={formData.league}
+                onChange={(e) => setFormData({ ...formData, league: e.target.value })}
+                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
+                placeholder="e.g., Premier League"
+                required
+              />
+            </div>
+
+            {/* Country */}
+            <div>
+              <label className="block text-sm font-medium text-zinc-300 mb-2">
+                Country
+              </label>
+              <input
+                type="text"
+                value={formData.country}
+                onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
+                placeholder="e.g., England"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            {/* Match Date */}
+            <div>
+              <label className="block text-sm font-medium text-zinc-300 mb-2">
+                Match Date
+              </label>
+              <input
+                type="date"
+                value={formData.matchDate}
+                onChange={(e) => setFormData({ ...formData, matchDate: e.target.value })}
+                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
+                required
+              />
+            </div>
+
+            {/* Status */}
+            <div>
+              <label className="block text-sm font-medium text-zinc-300 mb-2">
+                Status
+              </label>
+              <select
+                value={formData.status}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
+                required
+              >
+                <option value="FT">Full Time (FT)</option>
+                <option value="LIVE">Live</option>
+                <option value="HT">Half Time (HT)</option>
+                <option value="NS">Not Started (NS)</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <div className="flex gap-4 pt-4">
+            <button
+              type="submit"
+              className="flex-1 py-3 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 transition-colors"
+            >
+              {mode === 'create' ? 'Create Match' : 'Update Match'}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 py-3 bg-zinc-700 text-white font-bold rounded-lg hover:bg-zinc-600 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}

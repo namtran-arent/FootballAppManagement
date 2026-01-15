@@ -1,9 +1,10 @@
 'use client';
 
-import { Star } from 'lucide-react';
+import { Star, Edit2, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 interface MatchCardProps {
+  matchId: string;
   homeTeam: string;
   awayTeam: string;
   homeScore: number;
@@ -13,9 +14,12 @@ interface MatchCardProps {
   awayLogo?: string;
   isFavorite?: boolean;
   onToggleFavorite?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export default function MatchCard({
+  matchId,
   homeTeam,
   awayTeam,
   homeScore,
@@ -25,6 +29,8 @@ export default function MatchCard({
   awayLogo = '⚽',
   isFavorite = false,
   onToggleFavorite,
+  onEdit,
+  onDelete,
 }: MatchCardProps) {
   const [favorite, setFavorite] = useState(isFavorite);
 
@@ -57,15 +63,35 @@ export default function MatchCard({
         </div>
       </div>
 
-      {/* Favorite Button */}
-      <button
-        onClick={handleToggleFavorite}
-        className="ml-4 text-zinc-400 hover:text-yellow-400 transition-colors"
-      >
-        <Star
-          className={`w-5 h-5 ${favorite ? 'fill-yellow-400 text-yellow-400' : ''}`}
-        />
-      </button>
+      {/* Action Buttons */}
+      <div className="ml-4 flex items-center gap-2">
+        <button
+          onClick={handleToggleFavorite}
+          className="text-zinc-400 hover:text-yellow-400 transition-colors"
+        >
+          <Star
+            className={`w-5 h-5 ${favorite ? 'fill-yellow-400 text-yellow-400' : ''}`}
+          />
+        </button>
+        {onEdit && (
+          <button
+            onClick={onEdit}
+            className="text-zinc-400 hover:text-blue-400 transition-colors"
+            title="Edit match"
+          >
+            <Edit2 className="w-5 h-5" />
+          </button>
+        )}
+        {onDelete && (
+          <button
+            onClick={onDelete}
+            className="text-zinc-400 hover:text-red-400 transition-colors"
+            title="Delete match"
+          >
+            <Trash2 className="w-5 h-5" />
+          </button>
+        )}
+      </div>
     </div>
   );
 }

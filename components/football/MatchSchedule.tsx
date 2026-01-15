@@ -1,26 +1,26 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Calendar, Radio } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, Radio, Plus } from 'lucide-react';
 import MatchCard from './MatchCard';
+import MatchForm, { Match } from './MatchForm';
 
 interface MatchScheduleProps {
   selectedTeam: string | null;
   searchQuery: string;
 }
 
-interface Match {
-  id: string;
-  homeTeam: string;
-  awayTeam: string;
-  homeScore: number;
-  awayScore: number;
-  status: string;
-  league: string;
-  country: string;
-  homeLogo?: string;
-  awayLogo?: string;
-}
+// Helper function to get date string in YYYY-MM-DD format
+const getDateString = (date: Date): string => {
+  return date.toISOString().split('T')[0];
+};
+
+// Helper function to get date string for n days from today
+const getDateStringFromToday = (days: number): string => {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  return getDateString(date);
+};
 
 // Sample match data
 const SAMPLE_MATCHES: Match[] = [
@@ -33,6 +33,7 @@ const SAMPLE_MATCHES: Match[] = [
     status: 'FT',
     league: 'Bundesliga',
     country: 'Germany',
+    matchDate: getDateStringFromToday(-1), // Yesterday
     homeLogo: '🐺',
     awayLogo: '⚫',
   },
@@ -45,6 +46,7 @@ const SAMPLE_MATCHES: Match[] = [
     status: 'FT',
     league: 'Bundesliga',
     country: 'Germany',
+    matchDate: getDateStringFromToday(0), // Today
     homeLogo: '🔴',
     awayLogo: '🔴',
   },
@@ -57,6 +59,7 @@ const SAMPLE_MATCHES: Match[] = [
     status: 'FT',
     league: 'Bundesliga',
     country: 'Germany',
+    matchDate: getDateStringFromToday(0), // Today
     homeLogo: '🔵',
     awayLogo: '⚫',
   },
@@ -69,6 +72,7 @@ const SAMPLE_MATCHES: Match[] = [
     status: 'FT',
     league: 'Bundesliga',
     country: 'Germany',
+    matchDate: getDateStringFromToday(1), // Tomorrow
     homeLogo: '🔴',
     awayLogo: '🔴',
   },
@@ -81,6 +85,7 @@ const SAMPLE_MATCHES: Match[] = [
     status: 'FT',
     league: 'Serie A',
     country: 'Italy',
+    matchDate: getDateStringFromToday(1), // Tomorrow
     homeLogo: '🔵',
     awayLogo: '⚪',
   },
@@ -93,6 +98,7 @@ const SAMPLE_MATCHES: Match[] = [
     status: 'FT',
     league: 'Serie A',
     country: 'Italy',
+    matchDate: getDateStringFromToday(2), // Day after tomorrow
     homeLogo: '🔵',
     awayLogo: '🟡',
   },
@@ -103,14 +109,79 @@ export default function MatchSchedule({
   searchQuery,
 }: MatchScheduleProps) {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [matches, setMatches] = useState<Match[]>(SAMPLE_MATCHES);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingMatch, setEditingMatch] = useState<Match | null>(null);
+  const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
+
+  // CRUD Operations
+  const handleCreateMatch = (matchData: Omit<Match, 'id'>) => {
+    const newMatch: Match = {
+      ...matchData,
+      id: Date.now().toString(),
+    };
+    setMatches([...matches, newMatch]);
+  };
+
+  const handleUpdateMatch = (matchData: Omit<Match, 'id'>) => {
+    if (editingMatch) {
+      setMatches(
+        matches.map((match) =>
+          match.id === editingMatch.id ? { ...matchData, id: editingMatch.id } : match
+        )
+      );
+    }
+  };
+
+  const handleDeleteMatch = (matchId: string) => {
+    if (confirm('Are you sure you want to delete this match?')) {
+      setMatches(matches.filter((match) => match.id !== matchId));
+    }
+  };
+
+  const handleEditMatch = (match: Match) => {
+    setEditingMatch(match);
+    setFormMode('edit');
+    setIsFormOpen(true);
+  };
+
+  const handleCreateClick = () => {
+    setEditingMatch(null);
+    setFormMode('create');
+    setIsFormOpen(true);
+  };
+
+  const handleFormClose = () => {
+    setIsFormOpen(false);
+    setEditingMatch(null);
+  };
+
+  const handleFormSubmit = (matchData: Omit<Match, 'id'>) => {
+    if (formMode === 'create') {
+      handleCreateMatch(matchData);
+    } else {
+      handleUpdateMatch(matchData);
+    }
+  };
+
+  // Get selected date string in YYYY-MM-DD format
+  const selectedDateString = getDateString(selectedDate);
 
   // Filter matches based on selections
-  const filteredMatches = SAMPLE_MATCHES.filter((match) => {
+  const filteredMatches = matches.filter((match) => {
+    // Filter by date
+    if (match.matchDate !== selectedDateString) {
+      return false;
+    }
+
+    // Filter by team
     if (selectedTeam) {
       if (match.homeTeam !== selectedTeam && match.awayTeam !== selectedTeam) {
         return false;
       }
     }
+
+    // Filter by search query
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       if (
@@ -151,30 +222,39 @@ export default function MatchSchedule({
     <div className="flex-1 bg-zinc-900">
       {/* Date Navigation */}
       <div className="bg-zinc-800 border-b border-zinc-700 px-6 py-4">
-        <div className="flex items-center gap-4">
-          <button className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium flex items-center gap-2 hover:bg-red-700 transition-colors">
-            <Radio className="w-4 h-4" />
-            LIVE
-          </button>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => navigateDate('prev')}
-              className="p-2 hover:bg-zinc-700 rounded transition-colors"
-            >
-              <ChevronLeft className="w-5 h-5" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium flex items-center gap-2 hover:bg-red-700 transition-colors">
+              <Radio className="w-4 h-4" />
+              LIVE
             </button>
-            <span className="px-4 py-2 text-white font-medium">
-              {formatDate(selectedDate)}
-            </span>
-            <button
-              onClick={() => navigateDate('next')}
-              className="p-2 hover:bg-zinc-700 rounded transition-colors"
-            >
-              <ChevronRight className="w-5 h-5" />
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => navigateDate('prev')}
+                className="p-2 hover:bg-zinc-700 rounded transition-colors"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <span className="px-4 py-2 text-white font-medium">
+                {formatDate(selectedDate)}
+              </span>
+              <button
+                onClick={() => navigateDate('next')}
+                className="p-2 hover:bg-zinc-700 rounded transition-colors"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+            <button className="p-2 hover:bg-zinc-700 rounded transition-colors">
+              <Calendar className="w-5 h-5 text-zinc-400" />
             </button>
           </div>
-          <button className="p-2 hover:bg-zinc-700 rounded transition-colors">
-            <Calendar className="w-5 h-5 text-zinc-400" />
+          <button
+            onClick={handleCreateClick}
+            className="px-4 py-2 bg-green-500 text-white rounded-lg font-medium flex items-center gap-2 hover:bg-green-600 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Create Match
           </button>
         </div>
       </div>
@@ -198,6 +278,7 @@ export default function MatchSchedule({
               {matches.map((match) => (
                 <MatchCard
                   key={match.id}
+                  matchId={match.id}
                   homeTeam={match.homeTeam}
                   awayTeam={match.awayTeam}
                   homeScore={match.homeScore}
@@ -205,6 +286,8 @@ export default function MatchSchedule({
                   status={match.status}
                   homeLogo={match.homeLogo}
                   awayLogo={match.awayLogo}
+                  onEdit={() => handleEditMatch(match)}
+                  onDelete={() => handleDeleteMatch(match.id)}
                 />
               ))}
             </div>
@@ -217,6 +300,15 @@ export default function MatchSchedule({
           </div>
         )}
       </div>
+
+      {/* Match Form Modal */}
+      <MatchForm
+        isOpen={isFormOpen}
+        onClose={handleFormClose}
+        onSubmit={handleFormSubmit}
+        match={editingMatch}
+        mode={formMode}
+      />
     </div>
   );
 }
