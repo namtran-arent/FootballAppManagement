@@ -131,17 +131,17 @@ export default function TeamForm({
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors"
+          className="absolute top-4 right-4 text-zinc-600 hover:text-zinc-900 transition-colors"
         >
           <X className="w-6 h-6" />
         </button>
 
         {/* Header */}
         <div className="mb-6">
-          <h2 className="text-3xl font-bold text-white mb-2">
+          <h2 className="text-3xl font-bold text-zinc-900 mb-2">
             {mode === 'create' ? 'Create New Team' : 'Edit Team'}
           </h2>
-          <p className="text-zinc-400">
+          <p className="text-zinc-600">
             {mode === 'create'
               ? 'Add a new team to the system'
               : 'Update team information'}
@@ -152,7 +152,7 @@ export default function TeamForm({
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Team Name */}
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">
+                <label className="block text-sm font-medium text-zinc-700 mb-2">
               Team Name
             </label>
             <input
@@ -161,7 +161,7 @@ export default function TeamForm({
               onChange={(e) =>
                 setFormData({ ...formData, teamName: e.target.value })
               }
-              className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
+              className="w-full px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-green-500 transition-colors"
               placeholder="Enter team name"
               required
             />
@@ -169,7 +169,7 @@ export default function TeamForm({
 
           {/* Captain Name */}
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">
+                <label className="block text-sm font-medium text-zinc-700 mb-2">
               Captain Name
             </label>
             <input
@@ -178,7 +178,7 @@ export default function TeamForm({
               onChange={(e) =>
                 setFormData({ ...formData, captainName: e.target.value })
               }
-              className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
+              className="w-full px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-green-500 transition-colors"
               placeholder="Enter captain name"
               required
             />
@@ -186,7 +186,7 @@ export default function TeamForm({
 
           {/* Captain Phone */}
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">
+                <label className="block text-sm font-medium text-zinc-700 mb-2">
               Captain Phone
             </label>
             <input
@@ -195,7 +195,7 @@ export default function TeamForm({
               onChange={(e) =>
                 setFormData({ ...formData, captainPhone: e.target.value })
               }
-              className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
+              className="w-full px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-green-500 transition-colors"
               placeholder="Enter captain phone number"
               required
             />
@@ -203,7 +203,7 @@ export default function TeamForm({
 
           {/* Avatar Upload */}
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">
+                <label className="block text-sm font-medium text-zinc-700 mb-2">
               Team Avatar
             </label>
             <div className="space-y-3">
@@ -233,16 +233,16 @@ export default function TeamForm({
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploading}
-                    className="px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white hover:bg-zinc-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 bg-zinc-200 border border-zinc-300 rounded-lg text-zinc-900 hover:bg-zinc-300 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Upload className="w-4 h-4" />
                     {avatarFile ? 'Change Image' : 'Upload Image'}
                   </button>
-                  {avatarFile && (
-                    <p className="mt-2 text-xs text-zinc-400">
-                      Selected: {avatarFile.name}
-                    </p>
-                  )}
+                    {avatarFile && (
+                      <p className="mt-2 text-xs text-zinc-600">
+                        Selected: {avatarFile.name}
+                      </p>
+                    )}
                   <p className="mt-1 text-xs text-zinc-500">
                     Leave empty to use default avatar
                   </p>
@@ -256,7 +256,7 @@ export default function TeamForm({
             <button
               type="submit"
               disabled={uploading}
-              className="flex-1 py-3 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 py-3 btn-gradient font-bold rounded-lg"
             >
               {uploading
                 ? 'Uploading...'

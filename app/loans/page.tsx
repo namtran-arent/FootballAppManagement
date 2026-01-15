@@ -194,37 +194,37 @@ export default function LoansPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-900 text-white">
+    <div className="min-h-screen">
       <FootballHeader />
       <div className="flex">
         <FootballSidebar />
         <div className="flex-1 container mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold">Loan Management</h1>
+          <h1 className="text-3xl font-bold text-zinc-900">Loan Management</h1>
           <button
             onClick={handleCreateClick}
-            className="px-6 py-3 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors"
+            className="px-6 py-3 btn-gradient rounded-lg font-medium"
           >
             + Create Loan
           </button>
         </div>
 
         {/* Date Navigation */}
-        <div className="mb-6 bg-zinc-800 rounded-lg p-4">
+        <div className="mb-6 glass-card p-4">
           <div className="flex items-center justify-between">
             <button
               onClick={() => navigateDate('prev')}
-              className="p-2 hover:bg-zinc-700 rounded-lg transition-colors"
+              className="p-2 hover:bg-zinc-200 rounded-lg transition-colors"
               title="Previous day"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-5 h-5 text-zinc-700" />
             </button>
             
             <div className="flex items-center gap-3">
-              <Calendar className="w-5 h-5 text-green-500" />
+              <Calendar className="w-5 h-5 text-green-600" />
               <div className="text-center">
-                <div className="text-lg font-semibold">{formatDate(selectedDate)}</div>
-                <div className="text-xs text-zinc-400">
+                <div className="text-lg font-semibold text-zinc-900">{formatDate(selectedDate)}</div>
+                <div className="text-xs text-zinc-600">
                   {selectedDate.toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
@@ -240,16 +240,16 @@ export default function LoansPage() {
                     setSelectedDate(new Date(e.target.value));
                   }
                 }}
-                className="ml-2 px-3 py-1 bg-zinc-700 border border-zinc-600 rounded text-white text-sm focus:outline-none focus:border-green-500"
+                className="ml-2 px-3 py-1 bg-white border border-zinc-300 rounded text-zinc-900 text-sm focus:outline-none focus:border-green-500"
               />
             </div>
 
             <button
               onClick={() => navigateDate('next')}
-              className="p-2 hover:bg-zinc-700 rounded-lg transition-colors"
+              className="p-2 hover:bg-zinc-200 rounded-lg transition-colors"
               title="Next day"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-5 h-5 text-zinc-700" />
             </button>
           </div>
         </div>
@@ -261,12 +261,12 @@ export default function LoansPage() {
         )}
 
         {loading ? (
-          <div className="bg-zinc-800 rounded-lg p-8 text-center">
-            <p className="text-zinc-400">Loading loans...</p>
+          <div className="glass-card p-8 text-center">
+            <p className="text-zinc-600">Loading loans...</p>
           </div>
         ) : filteredLoans.length === 0 ? (
-          <div className="bg-zinc-800 rounded-lg p-8 text-center">
-            <p className="text-zinc-400">No loans found for {formatDate(selectedDate)}</p>
+          <div className="glass-card p-8 text-center">
+            <p className="text-zinc-600">No loans found for {formatDate(selectedDate)}</p>
           </div>
         ) : (
           <LoanList

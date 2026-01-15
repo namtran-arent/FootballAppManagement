@@ -148,17 +148,17 @@ export default function LoanForm({
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors"
+          className="absolute top-4 right-4 text-zinc-600 hover:text-zinc-900 transition-colors"
         >
           <X className="w-6 h-6" />
         </button>
 
         {/* Header */}
         <div className="mb-6">
-          <h2 className="text-3xl font-bold text-white mb-2">
+          <h2 className="text-3xl font-bold text-zinc-900 mb-2">
             {mode === 'create' ? 'Create New Loan' : 'Edit Loan'}
           </h2>
-          <p className="text-zinc-400">
+          <p className="text-zinc-600">
             {mode === 'create'
               ? 'Add a new player loan agreement'
               : 'Update loan information'}
@@ -168,12 +168,12 @@ export default function LoanForm({
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           {loadingData ? (
-            <div className="text-center py-8 text-zinc-400">Loading teams and matches...</div>
+            <div className="text-center py-8 text-zinc-600">Loading teams and matches...</div>
           ) : (
             <>
               {/* Team Selection */}
               <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                <label className="block text-sm font-medium text-zinc-700 mb-2">
                   Team
                 </label>
                 <select
@@ -181,7 +181,7 @@ export default function LoanForm({
                   onChange={(e) =>
                     setFormData({ ...formData, teamId: e.target.value })
                   }
-                  className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
+                  className="w-full px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 focus:outline-none focus:border-green-500 transition-colors"
                   required
                 >
                   <option value="">Select team</option>
@@ -195,7 +195,7 @@ export default function LoanForm({
 
               {/* Match Selection */}
               <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                <label className="block text-sm font-medium text-zinc-700 mb-2">
                   Match
                 </label>
                 <select
@@ -203,7 +203,7 @@ export default function LoanForm({
                   onChange={(e) =>
                     setFormData({ ...formData, matchId: e.target.value })
                   }
-                  className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
+                  className="w-full px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 focus:outline-none focus:border-green-500 transition-colors"
                   required
                   disabled={!formData.teamId}
                 >
@@ -217,7 +217,7 @@ export default function LoanForm({
                   ))}
                 </select>
                 {formData.matchId && (
-                  <p className="mt-2 text-xs text-zinc-400">
+                  <p className="mt-2 text-xs text-zinc-600">
                     {(() => {
                       const selectedMatch = filteredMatches.find(m => m.id === formData.matchId);
                       return selectedMatch
@@ -227,12 +227,12 @@ export default function LoanForm({
                   </p>
                 )}
                 {formData.teamId && filteredMatches.length === 0 && (
-                  <p className="mt-2 text-xs text-yellow-400">
+                  <p className="mt-2 text-xs text-yellow-700">
                     No upcoming matches found for this team.
                   </p>
                 )}
                 {!formData.teamId && filteredMatches.length === 0 && (
-                  <p className="mt-2 text-xs text-yellow-400">
+                  <p className="mt-2 text-xs text-yellow-700">
                     No upcoming matches available.
                   </p>
                 )}
@@ -256,7 +256,7 @@ export default function LoanForm({
                     numberOfPlayers: parseInt(e.target.value) || 1,
                   })
                 }
-                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
+                className="w-full px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-green-500 transition-colors"
                 required
               />
             </div>
@@ -266,17 +266,17 @@ export default function LoanForm({
               <label className="block text-sm font-medium text-zinc-300 mb-2">
                 Status
               </label>
-              <select
-                value={formData.status}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    status: e.target.value as Loan['status'],
-                  })
-                }
-                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
-                required
-              >
+                <select
+                  value={formData.status}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      status: e.target.value as Loan['status'],
+                    })
+                  }
+                  className="w-full px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 focus:outline-none focus:border-green-500 transition-colors"
+                  required
+                >
                 <option value="pending">Pending</option>
                 <option value="active">Active</option>
                 <option value="completed">Completed</option>
@@ -288,14 +288,14 @@ export default function LoanForm({
           <div className="flex gap-4 pt-4">
             <button
               type="submit"
-              className="flex-1 py-3 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 transition-colors"
+              className="flex-1 py-3 btn-gradient font-bold rounded-lg"
             >
               {mode === 'create' ? 'Create Loan' : 'Update Loan'}
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-3 bg-zinc-700 text-white font-bold rounded-lg hover:bg-zinc-600 transition-colors"
+              className="flex-1 py-3 bg-zinc-200 text-zinc-900 font-bold rounded-lg hover:bg-zinc-300 transition-colors"
             >
               Cancel
             </button>

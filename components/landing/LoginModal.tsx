@@ -60,24 +60,24 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       ></div>
 
       {/* Modal */}
-      <div className="relative bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl w-full max-w-md p-8 z-10">
+      <div className="relative glass-card w-full max-w-md p-8 z-10">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors"
+          className="absolute top-4 right-4 text-zinc-600 hover:text-zinc-900 transition-colors"
         >
           <X className="w-6 h-6" />
         </button>
 
         {/* Header */}
         <div className="mb-6">
-          <h2 className="text-3xl font-bold text-white mb-2">Login</h2>
-          <p className="text-zinc-400">Welcome back! Please login to continue.</p>
+          <h2 className="text-3xl font-bold text-zinc-900 mb-2">Login</h2>
+          <p className="text-zinc-600">Welcome back! Please login to continue.</p>
         </div>
 
         {/* Error Message */}
         {error && (
-          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded text-red-400 text-sm">
+          <div className="mb-4 p-3 bg-red-100 border border-red-300 rounded text-red-700 text-sm">
             {error}
           </div>
         )}
@@ -86,17 +86,17 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Email Input */}
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">
+            <label className="block text-sm font-medium text-zinc-700 mb-2">
               Email
             </label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400 w-5 h-5" />
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-500 w-5 h-5" />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
-                className="w-full pl-10 pr-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-lime-400 transition-colors"
+                className="w-full pl-10 pr-4 py-3 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-lime-400 transition-colors"
                 required
               />
             </div>
@@ -104,23 +104,23 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
           {/* Password Input */}
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">
+            <label className="block text-sm font-medium text-zinc-700 mb-2">
               Password
             </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400 w-5 h-5" />
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-500 w-5 h-5" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
-                className="w-full pl-10 pr-12 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-lime-400 transition-colors"
+                className="w-full pl-10 pr-12 py-3 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-lime-400 transition-colors"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-zinc-400 hover:text-white transition-colors"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-zinc-500 hover:text-zinc-900 transition-colors"
               >
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
@@ -132,11 +132,11 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
-                className="w-4 h-4 rounded bg-zinc-800 border-zinc-700 text-lime-400 focus:ring-lime-400 focus:ring-offset-zinc-900"
+                className="w-4 h-4 rounded bg-white border-zinc-300 text-lime-500 focus:ring-lime-400 focus:ring-offset-white"
               />
-              <span className="text-sm text-zinc-400">Remember me</span>
+              <span className="text-sm text-zinc-600">Remember me</span>
             </label>
-            <a href="#" className="text-sm text-lime-400 hover:text-lime-300 transition-colors">
+            <a href="#" className="text-sm text-lime-600 hover:text-lime-700 transition-colors">
               Forgot password?
             </a>
           </div>
@@ -145,18 +145,18 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 bg-lime-400 text-zinc-900 font-bold rounded-lg hover:bg-lime-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3 btn-gradient font-bold rounded-lg"
           >
             {isLoading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 
         {/* Divider */}
-        <div className="my-6 flex items-center">
-          <div className="flex-1 border-t border-zinc-700"></div>
-          <span className="px-4 text-sm text-zinc-500">OR</span>
-          <div className="flex-1 border-t border-zinc-700"></div>
-        </div>
+          <div className="my-6 flex items-center">
+            <div className="flex-1 border-t border-zinc-300"></div>
+            <span className="px-4 text-sm text-zinc-500">OR</span>
+            <div className="flex-1 border-t border-zinc-300"></div>
+          </div>
 
         {/* Google SSO Button */}
         <button
@@ -186,9 +186,9 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
         {/* Sign Up Link */}
         <div className="mt-6 text-center">
-          <p className="text-zinc-400 text-sm">
+          <p className="text-zinc-600 text-sm">
             Don't have an account?{' '}
-            <a href="#" className="text-lime-400 hover:text-lime-300 font-medium transition-colors">
+            <a href="#" className="text-lime-600 hover:text-lime-700 font-medium transition-colors">
               Sign up
             </a>
           </p>

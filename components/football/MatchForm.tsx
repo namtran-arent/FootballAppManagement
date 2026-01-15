@@ -172,18 +172,18 @@ export default function MatchForm({
       ></div>
 
       {/* Modal */}
-      <div className="relative bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl w-full max-w-2xl p-8 z-10 max-h-[90vh] overflow-y-auto">
+      <div className="relative glass-card w-full max-w-2xl p-8 z-10 max-h-[90vh] overflow-y-auto">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors"
+          className="absolute top-4 right-4 text-zinc-600 hover:text-zinc-900 transition-colors"
         >
           <X className="w-6 h-6" />
         </button>
 
         {/* Header */}
         <div className="mb-6">
-          <h2 className="text-3xl font-bold text-white mb-2">
+          <h2 className="text-3xl font-bold text-zinc-900 mb-2">
             {mode === 'create' ? 'Create New Match' : 'Edit Match'}
           </h2>
         </div>
@@ -194,13 +194,13 @@ export default function MatchForm({
             <div className="grid grid-cols-2 gap-4">
               {/* Home Team */}
               <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                <label className="block text-sm font-medium text-zinc-700 mb-2">
                   Home Team
                 </label>
                 <select
                   value={formData.homeTeamId}
                   onChange={(e) => setFormData({ ...formData, homeTeamId: e.target.value })}
-                  className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
+                  className="w-full px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 focus:outline-none focus:border-green-500 transition-colors"
                   required
                   disabled={loadingTeams}
                 >
@@ -217,13 +217,13 @@ export default function MatchForm({
 
               {/* Away Team */}
               <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                <label className="block text-sm font-medium text-zinc-700 mb-2">
                   Away Team
                 </label>
                 <select
                   value={formData.awayTeamId}
                   onChange={(e) => setFormData({ ...formData, awayTeamId: e.target.value })}
-                  className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors"
+                  className="w-full px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 focus:outline-none focus:border-green-500 transition-colors"
                   required
                   disabled={loadingTeams}
                 >
@@ -241,7 +241,7 @@ export default function MatchForm({
           )}
 
           {isMatchStartedState && mode === 'edit' && (
-            <div className="p-4 bg-yellow-500/20 border border-yellow-500/50 rounded-lg text-yellow-400 text-sm mb-4">
+            <div className="p-4 bg-yellow-100 border border-yellow-300 rounded-lg text-yellow-700 text-sm mb-4">
               Match has started. You can only update the score and status.
             </div>
           )}
@@ -249,7 +249,7 @@ export default function MatchForm({
           <div className="grid grid-cols-2 gap-4">
             {/* Home Score */}
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <label className="block text-sm font-medium text-zinc-700 mb-2">
                 Home Score
               </label>
               <input
@@ -257,14 +257,14 @@ export default function MatchForm({
                 min="0"
                 value={formData.homeScore}
                 onChange={(e) => setFormData({ ...formData, homeScore: parseInt(e.target.value) || 0 })}
-                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
+                className="w-full px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-green-500 transition-colors"
                 required
               />
             </div>
 
             {/* Away Score */}
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <label className="block text-sm font-medium text-zinc-700 mb-2">
                 Away Score
               </label>
               <input
@@ -272,7 +272,7 @@ export default function MatchForm({
                 min="0"
                 value={formData.awayScore}
                 onChange={(e) => setFormData({ ...formData, awayScore: parseInt(e.target.value) || 0 })}
-                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
+                className="w-full px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-green-500 transition-colors"
                 required
               />
             </div>
@@ -282,14 +282,14 @@ export default function MatchForm({
             <div className="grid grid-cols-2 gap-4">
               {/* League */}
               <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                <label className="block text-sm font-medium text-zinc-700 mb-2">
                   League
                 </label>
                 <input
                   type="text"
                   value={formData.league}
                   onChange={(e) => setFormData({ ...formData, league: e.target.value })}
-                  className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
+                  className="w-full px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-green-500 transition-colors"
                   placeholder="e.g., Premier League"
                   required
                 />
@@ -297,14 +297,14 @@ export default function MatchForm({
 
               {/* Country */}
               <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                <label className="block text-sm font-medium text-zinc-700 mb-2">
                   Country
                 </label>
                 <input
                   type="text"
                   value={formData.country}
                   onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                  className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
+                  className="w-full px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-green-500 transition-colors"
                   placeholder="e.g., England"
                   required
                 />
@@ -316,7 +316,7 @@ export default function MatchForm({
             <div className="grid grid-cols-2 gap-4">
               {/* Match Date */}
               <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                <label className="block text-sm font-medium text-zinc-700 mb-2">
                   Match Date
                 </label>
                 <input
@@ -343,14 +343,14 @@ export default function MatchForm({
                     setFormData({ ...formData, matchDate: selectedDate });
                   }}
                   min={mode === 'create' ? getCurrentDateTime().currentDate : undefined}
-                  className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
+                  className="w-full px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-green-500 transition-colors"
                   required
                 />
               </div>
 
               {/* Match Time */}
               <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                <label className="block text-sm font-medium text-zinc-700 mb-2">
                   Match Start Time
                 </label>
                 <input
@@ -369,7 +369,7 @@ export default function MatchForm({
                     setFormData({ ...formData, matchTime: selectedTime });
                   }}
                   min={mode === 'create' && formData.matchDate === getCurrentDateTime().currentDate ? getCurrentDateTime().currentTime : undefined}
-                  className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
+                  className="w-full px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-green-500 transition-colors"
                   required
                 />
               </div>
@@ -378,14 +378,14 @@ export default function MatchForm({
 
           {/* Status - Always visible, can be updated even if match started */}
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">
+            <label className="block text-sm font-medium text-zinc-700 mb-2">
               Status
             </label>
             <select
               value={formData.status}
               onChange={(e) => setFormData({ ...formData, status: e.target.value })}
               disabled={mode === 'create'}
-              className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-green-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 focus:outline-none focus:border-green-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               required
             >
               <option value="NS">Not Started (NS)</option>
@@ -394,7 +394,7 @@ export default function MatchForm({
               <option value="FT">Full Time (FT)</option>
             </select>
             {mode === 'create' && (
-              <p className="mt-1 text-xs text-zinc-500">
+              <p className="mt-1 text-xs text-zinc-600">
                 Status is automatically set to "Not Started" for new matches
               </p>
             )}
@@ -402,14 +402,14 @@ export default function MatchForm({
 
           {!isMatchStartedState && (
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <label className="block text-sm font-medium text-zinc-700 mb-2">
                 Location
               </label>
               <input
                 type="text"
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 transition-colors"
+                className="w-full px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-green-500 transition-colors"
                 placeholder="e.g., Old Trafford, Manchester"
               />
             </div>
@@ -419,14 +419,14 @@ export default function MatchForm({
           <div className="flex gap-4 pt-4">
             <button
               type="submit"
-              className="flex-1 py-3 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 transition-colors"
+              className="flex-1 py-3 btn-gradient font-bold rounded-lg"
             >
               {mode === 'create' ? 'Create Match' : 'Update Match'}
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-3 bg-zinc-700 text-white font-bold rounded-lg hover:bg-zinc-600 transition-colors"
+              className="flex-1 py-3 bg-zinc-200 text-zinc-900 font-bold rounded-lg hover:bg-zinc-300 transition-colors"
             >
               Cancel
             </button>

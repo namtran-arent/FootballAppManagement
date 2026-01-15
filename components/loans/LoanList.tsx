@@ -13,13 +13,13 @@ export default function LoanList({ loans, onEdit, onDelete }: LoanListProps) {
   const getStatusColor = (status: Loan['status']) => {
     switch (status) {
       case 'active':
-        return 'bg-green-500/20 text-green-400 border-green-500/50';
+        return 'bg-green-100 text-green-700 border-green-300';
       case 'completed':
-        return 'bg-zinc-500/20 text-zinc-400 border-zinc-500/50';
+        return 'bg-zinc-100 text-zinc-700 border-zinc-300';
       case 'pending':
-        return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50';
+        return 'bg-yellow-100 text-yellow-700 border-yellow-300';
       default:
-        return 'bg-zinc-500/20 text-zinc-400 border-zinc-500/50';
+        return 'bg-zinc-100 text-zinc-700 border-zinc-300';
     }
   };
 
@@ -43,37 +43,37 @@ export default function LoanList({ loans, onEdit, onDelete }: LoanListProps) {
 
   if (loans.length === 0) {
     return (
-      <div className="bg-zinc-800 rounded-lg p-8 text-center">
-        <p className="text-zinc-400">No loans found. Create your first loan!</p>
+      <div className="glass-card p-8 text-center">
+        <p className="text-zinc-600">No loans found. Create your first loan!</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-zinc-800 rounded-lg overflow-hidden">
+    <div className="glass-card overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-zinc-900 border-b border-zinc-700">
+        <table className="w-full border-collapse">
+          <thead className="bg-zinc-100/50 border-b border-zinc-200/50">
             <tr>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-zinc-300">
+              <th className="px-6 py-4 text-center text-sm font-semibold text-zinc-700">
                 Team Name
               </th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-zinc-300">
+              <th className="px-6 py-4 text-center text-sm font-semibold text-zinc-700">
                 Match
               </th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-zinc-300">
+              <th className="px-6 py-4 text-center text-sm font-semibold text-zinc-700">
                 Match Date
               </th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-zinc-300">
+              <th className="px-6 py-4 text-center text-sm font-semibold text-zinc-700">
                 Location
               </th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-zinc-300">
+              <th className="px-6 py-4 text-center text-sm font-semibold text-zinc-700">
                 Number of Players
               </th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-zinc-300">
+              <th className="px-6 py-4 text-center text-sm font-semibold text-zinc-700">
                 Status
               </th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-zinc-300">
+              <th className="px-6 py-4 text-center text-sm font-semibold text-zinc-700">
                 Actions
               </th>
             </tr>
@@ -85,26 +85,36 @@ export default function LoanList({ loans, onEdit, onDelete }: LoanListProps) {
               return (
                 <tr
                   key={loan.id}
-                  className={`border-b border-zinc-700 transition-colors ${
+                  className={`transition-all duration-300 ${
                     matchStarted
-                      ? 'bg-zinc-800/50 opacity-75'
-                      : 'hover:bg-zinc-700/50'
+                      ? 'opacity-60'
+                      : 'hover:bg-zinc-50/50'
                   }`}
                 >
-                  <td className="px-6 py-4 text-white font-medium">
-                    {loan.team.teamName}
+                  <td className="px-6 py-4 text-center">
+                    <div className="text-zinc-900 font-medium">
+                      {loan.team.teamName}
+                    </div>
                   </td>
-                  <td className="px-6 py-4 text-zinc-300">{matchInfo}</td>
-                  <td className="px-6 py-4 text-zinc-300">
-                    {formatDate(loan.match.matchDate)}
+                  <td className="px-6 py-4 text-center">
+                    <div className="text-zinc-700">{matchInfo}</div>
                   </td>
-                  <td className="px-6 py-4 text-zinc-300">
-                    {loan.match.location || '-'}
+                  <td className="px-6 py-4 text-center">
+                    <div className="text-zinc-700">
+                      {formatDate(loan.match.matchDate)}
+                    </div>
                   </td>
-                  <td className="px-6 py-4 text-zinc-300">
-                    {loan.numberOfPlayers} {loan.numberOfPlayers === 1 ? 'player' : 'players'}
+                  <td className="px-6 py-4 text-center">
+                    <div className="text-zinc-700">
+                      {loan.match.location || '-'}
+                    </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 text-center">
+                    <div className="text-zinc-700">
+                      {loan.numberOfPlayers} {loan.numberOfPlayers === 1 ? 'player' : 'players'}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-center">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(
                         loan.status
@@ -113,15 +123,15 @@ export default function LoanList({ loans, onEdit, onDelete }: LoanListProps) {
                       {loan.status.toUpperCase()}
                     </span>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
+                  <td className="px-6 py-4 text-center">
+                    <div className="flex items-center justify-center gap-2">
                       <button
                         onClick={() => onEdit(loan)}
                         disabled={matchStarted}
                         className={`transition-colors ${
                           matchStarted
-                            ? 'text-zinc-600 cursor-not-allowed opacity-50'
-                            : 'text-zinc-400 hover:text-blue-400'
+                            ? 'text-zinc-400 cursor-not-allowed opacity-50'
+                            : 'text-zinc-700 hover:text-blue-600'
                         }`}
                         title={matchStarted ? 'Match has started, cannot edit' : 'Edit loan'}
                       >
@@ -132,8 +142,8 @@ export default function LoanList({ loans, onEdit, onDelete }: LoanListProps) {
                         disabled={matchStarted}
                         className={`transition-colors ${
                           matchStarted
-                            ? 'text-zinc-600 cursor-not-allowed opacity-50'
-                            : 'text-zinc-400 hover:text-red-400'
+                            ? 'text-zinc-400 cursor-not-allowed opacity-50'
+                            : 'text-zinc-700 hover:text-red-600'
                         }`}
                         title={matchStarted ? 'Match has started, cannot delete' : 'Delete loan'}
                       >

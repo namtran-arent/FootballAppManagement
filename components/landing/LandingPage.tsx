@@ -16,41 +16,29 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-900 text-white relative overflow-hidden">
-      {/* Textured Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 opacity-90">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `repeating-linear-gradient(
-            45deg,
-            transparent,
-            transparent 2px,
-            rgba(255, 255, 255, 0.02) 2px,
-            rgba(255, 255, 255, 0.02) 4px
-          )`
-        }}></div>
-      </div>
+    <div className="min-h-screen relative overflow-hidden">
 
       {/* Header */}
       <header className="relative z-10 container mx-auto px-6 py-6">
         <nav className="flex items-center justify-between">
           <div className="flex items-center gap-8">
-            <Link href="#about" className="text-white uppercase text-sm font-medium hover:text-lime-400 transition-colors">
+            <Link href="#about" className="text-zinc-900 uppercase text-sm font-medium hover:text-lime-600 transition-colors">
               About
             </Link>
-            <Link href="#events" className="text-white uppercase text-sm font-medium hover:text-lime-400 transition-colors">
+            <Link href="#events" className="text-zinc-900 uppercase text-sm font-medium hover:text-lime-600 transition-colors">
               Events
             </Link>
-            <Link href="#prices" className="text-white uppercase text-sm font-medium hover:text-lime-400 transition-colors">
+            <Link href="#prices" className="text-zinc-900 uppercase text-sm font-medium hover:text-lime-600 transition-colors">
               Prices
             </Link>
-            <Link href="#gallery" className="text-white uppercase text-sm font-medium hover:text-lime-400 transition-colors">
+            <Link href="#gallery" className="text-zinc-900 uppercase text-sm font-medium hover:text-lime-600 transition-colors">
               Gallery
             </Link>
           </div>
           <div className="flex items-center gap-4">
             {session?.user ? (
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 text-white">
+                <div className="flex items-center gap-2 text-zinc-900">
                   {session.user.image ? (
                     <img
                       src={session.user.image}
@@ -60,7 +48,7 @@ export default function LandingPage() {
                   ) : (
                     <User className="w-5 h-5" />
                   )}
-                  <span className="text-sm">{session.user.name || session.user.email}</span>
+                  <span className="text-sm font-medium">{session.user.name || session.user.email}</span>
                 </div>
                 <button
                   onClick={handleLogout}
@@ -73,16 +61,16 @@ export default function LandingPage() {
             ) : (
               <button
                 onClick={() => setIsLoginModalOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-lime-400 text-zinc-900 font-medium rounded-lg hover:bg-lime-300 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 btn-gradient font-medium rounded-lg"
               >
                 <LogIn className="w-4 h-4" />
                 <span>Login</span>
               </button>
             )}
-            <a href="#" className="text-white hover:text-lime-400 transition-colors">
+            <a href="#" className="text-zinc-900 hover:text-lime-600 transition-colors">
               <Facebook className="w-5 h-5" />
             </a>
-            <a href="#" className="text-white hover:text-lime-400 transition-colors">
+            <a href="#" className="text-zinc-900 hover:text-lime-600 transition-colors">
               <Instagram className="w-5 h-5" />
             </a>
           </div>
@@ -94,13 +82,13 @@ export default function LandingPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center min-h-[calc(100vh-200px)]">
           {/* Left Content Block */}
           <div className="space-y-6 z-20">
-            <h1 className="text-6xl md:text-7xl font-bold uppercase text-white leading-tight">
+            <h1 className="text-6xl md:text-7xl font-bold uppercase text-zinc-900 leading-tight">
               SOCCER LIFE
             </h1>
-            <h2 className="text-2xl md:text-3xl font-bold uppercase text-lime-400">
+            <h2 className="text-2xl md:text-3xl font-bold uppercase text-lime-600">
               20 GOALS YOU WILL NEVER SEE AGAIN
             </h2>
-            <p className="text-white text-lg leading-relaxed max-w-md">
+            <p className="text-zinc-700 text-lg leading-relaxed max-w-md">
               Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna.
             </p>
 
@@ -109,7 +97,7 @@ export default function LandingPage() {
               {session?.user ? (
                 <Link
                   href="/football"
-                  className="inline-block px-8 py-3 bg-lime-400 text-zinc-900 uppercase font-bold hover:bg-lime-300 transition-colors"
+                  className="inline-block px-8 py-3 btn-gradient uppercase font-bold"
                 >
                   View Match Schedule
                 </Link>
@@ -123,7 +111,7 @@ export default function LandingPage() {
                   </button>
                   <button
                     onClick={() => setIsLoginModalOpen(true)}
-                    className="px-8 py-3 bg-zinc-800 border border-zinc-700 text-white uppercase font-bold hover:bg-zinc-700 hover:border-lime-400 transition-colors"
+                    className="px-8 py-3 bg-zinc-900 border border-zinc-800 text-white uppercase font-bold hover:bg-zinc-800 hover:border-lime-500 transition-colors"
                   >
                     Get Started
                   </button>
@@ -135,7 +123,7 @@ export default function LandingPage() {
           {/* Right Image Section */}
           <div className="relative z-20">
             {/* Circular Text Element */}
-            <div className="absolute top-4 right-4 w-32 h-32 border-2 border-white rounded-full flex items-center justify-center z-30 overflow-hidden">
+            <div className="absolute top-4 right-4 w-32 h-32 border-2 border-zinc-300 rounded-full flex items-center justify-center z-30 overflow-hidden">
               <div className="absolute inset-0 flex items-center justify-center">
                 <svg className="w-full h-full">
                   <defs>
@@ -144,7 +132,7 @@ export default function LandingPage() {
                       d="M 64,64 m -50,0 a 50,50 0 1,1 100,0 a 50,50 0 1,1 -100,0"
                     />
                   </defs>
-                  <text className="text-[8px] uppercase text-white font-medium fill-white">
+                  <text className="text-[8px] uppercase text-zinc-700 font-medium fill-zinc-700">
                     <textPath href="#circle" startOffset="0%">
                       LOREM IPSUM DOLOR SIT AMET, CONSECTETUER
                     </textPath>
@@ -158,9 +146,9 @@ export default function LandingPage() {
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center space-y-4">
                   <div className="text-8xl animate-bounce">⚽</div>
-                  <div className="text-white text-xl font-semibold">Soccer Player</div>
-                  <div className="text-zinc-400 text-sm">Action Shot</div>
-                  <p className="text-zinc-500 text-xs mt-4">Add your soccer player image here</p>
+                  <div className="text-zinc-900 text-xl font-semibold">Soccer Player</div>
+                  <div className="text-zinc-600 text-sm">Action Shot</div>
+                  <p className="text-zinc-600 text-xs mt-4">Add your soccer player image here</p>
                 </div>
               </div>
               {/* You can replace this with an actual image using Next.js Image component:

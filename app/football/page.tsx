@@ -10,7 +10,7 @@ export default function FootballPage() {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <div className="min-h-screen bg-zinc-900 text-white">
+    <div className="min-h-screen">
       <FootballHeader />
       <div className="flex">
         <FootballSidebar />

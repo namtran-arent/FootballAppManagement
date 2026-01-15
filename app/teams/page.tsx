@@ -163,16 +163,16 @@ export default function TeamsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-900 text-white">
+    <div className="min-h-screen">
       <FootballHeader />
       <div className="flex">
         <FootballSidebar />
         <div className="flex-1 container mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold">Team Management</h1>
+          <h1 className="text-3xl font-bold text-zinc-900">Team Management</h1>
           <button
             onClick={handleCreateClick}
-            className="px-6 py-3 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors"
+            className="px-6 py-3 btn-gradient rounded-lg font-medium"
           >
             + Create Team
           </button>
@@ -185,8 +185,8 @@ export default function TeamsPage() {
         )}
 
         {loading ? (
-          <div className="bg-zinc-800 rounded-lg p-8 text-center">
-            <p className="text-zinc-400">Loading teams...</p>
+          <div className="glass-card p-8 text-center">
+            <p className="text-zinc-600">Loading teams...</p>
           </div>
         ) : (
           <TeamList

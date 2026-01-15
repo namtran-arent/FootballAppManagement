@@ -78,23 +78,23 @@ export default function MatchCard({
   }, [matchDate, matchTime, matchHasStarted, status]);
 
   return (
-    <div className="px-4 py-3 border-b border-zinc-700 hover:bg-zinc-800 transition-colors">
+    <div className="mx-4 my-2 glass-card px-4 py-3 hover:shadow-lg transition-all duration-300">
       <div className="flex items-center justify-between">
         {/* Status, Date and Time Info */}
-        <div className="w-28 text-xs text-zinc-400 font-medium flex flex-col gap-1">
-          <div className="font-semibold text-white">{status}</div>
+        <div className="w-28 text-xs text-zinc-600 font-medium flex flex-col gap-1">
+          <div className="font-semibold text-zinc-900">{status}</div>
           {dateDisplay && (
-            <div className="text-zinc-400 text-[11px]">
+            <div className="text-zinc-500 text-[11px]">
               {dateDisplay}
             </div>
           )}
           {startTimeDisplay && (
-            <div className="text-zinc-300 text-[11px] font-medium">
+            <div className="text-zinc-600 text-[11px] font-medium">
               🕐 {startTimeDisplay}
             </div>
           )}
           {elapsedTime && (
-            <div className="text-green-400 text-[11px] font-semibold">
+            <div className="text-green-600 text-[11px] font-semibold">
               ⏱️ {elapsedTime}
             </div>
           )}
@@ -111,15 +111,15 @@ export default function MatchCard({
                 (e.target as HTMLImageElement).src = getDefaultAvatarUrl();
               }}
             />
-            <span className="text-white font-medium">{homeTeam.teamName}</span>
+            <span className="text-zinc-900 font-medium">{homeTeam.teamName}</span>
           </div>
           <div className="flex items-center gap-2 mx-4">
-            <span className="text-white font-semibold text-lg">{homeScore}</span>
+            <span className="text-zinc-900 font-semibold text-lg">{homeScore}</span>
             <span className="text-zinc-500">-</span>
-            <span className="text-white font-semibold text-lg">{awayScore}</span>
+            <span className="text-zinc-900 font-semibold text-lg">{awayScore}</span>
           </div>
           <div className="flex items-center gap-3 flex-1 justify-end">
-            <span className="text-white font-medium">{awayTeam.teamName}</span>
+            <span className="text-zinc-900 font-medium">{awayTeam.teamName}</span>
             <img
               src={awayTeam.avatarUrl || getDefaultAvatarUrl()}
               alt={awayTeam.teamName}
@@ -139,8 +139,8 @@ export default function MatchCard({
               disabled={matchHasStarted}
               className={`transition-colors ${
                 matchHasStarted
-                  ? 'text-zinc-600 cursor-not-allowed opacity-50'
-                  : 'text-zinc-400 hover:text-blue-400'
+                  ? 'text-zinc-400 cursor-not-allowed opacity-50'
+                  : 'text-zinc-700 hover:text-blue-600'
               }`}
               title={matchHasStarted ? 'Match has started. Only score can be updated.' : 'Edit match'}
             >
@@ -153,8 +153,8 @@ export default function MatchCard({
               disabled={matchHasStarted}
               className={`transition-colors ${
                 matchHasStarted
-                  ? 'text-zinc-600 cursor-not-allowed opacity-50'
-                  : 'text-zinc-400 hover:text-red-400'
+                  ? 'text-zinc-400 cursor-not-allowed opacity-50'
+                  : 'text-zinc-700 hover:text-red-600'
               }`}
               title={matchHasStarted ? 'Cannot delete match that has started' : 'Delete match'}
             >
@@ -165,7 +165,7 @@ export default function MatchCard({
       </div>
       {/* Location */}
       {location && (
-        <div className="mt-2 ml-16 text-xs text-zinc-400 flex items-center gap-1">
+        <div className="mt-2 ml-16 text-xs text-zinc-600 flex items-center gap-1">
           <span>📍</span>
           <span>{location}</span>
         </div>

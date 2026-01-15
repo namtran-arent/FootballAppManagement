@@ -310,39 +310,39 @@ export default function MatchSchedule({
   };
 
   return (
-    <div className="flex-1 bg-zinc-900">
+    <div className="flex-1">
       {/* Date Navigation */}
-      <div className="bg-zinc-800 border-b border-zinc-700 px-6 py-4">
+      <div className="glass-card mx-4 my-4 px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <button className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium flex items-center gap-2 hover:bg-red-700 transition-colors">
+            <button className="px-4 py-2 btn-gradient rounded-lg font-medium flex items-center gap-2">
               <Radio className="w-4 h-4" />
               LIVE
             </button>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => navigateDate('prev')}
-                className="p-2 hover:bg-zinc-700 rounded transition-colors"
+                className="p-2 hover:bg-zinc-200 rounded transition-colors"
               >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronLeft className="w-5 h-5 text-zinc-700" />
               </button>
-              <span className="px-4 py-2 text-white font-medium">
+              <span className="px-4 py-2 text-zinc-900 font-medium">
                 {formatDate(selectedDate)}
               </span>
               <button
                 onClick={() => navigateDate('next')}
-                className="p-2 hover:bg-zinc-700 rounded transition-colors"
+                className="p-2 hover:bg-zinc-200 rounded transition-colors"
               >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="w-5 h-5 text-zinc-700" />
               </button>
             </div>
-            <button className="p-2 hover:bg-zinc-700 rounded transition-colors">
-              <Calendar className="w-5 h-5 text-zinc-400" />
+            <button className="p-2 hover:bg-zinc-200 rounded transition-colors">
+              <Calendar className="w-5 h-5 text-zinc-600" />
             </button>
           </div>
           <button
             onClick={handleCreateClick}
-            className="px-4 py-2 bg-green-500 text-white rounded-lg font-medium flex items-center gap-2 hover:bg-green-600 transition-colors"
+            className="px-4 py-2 btn-gradient rounded-lg font-medium flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             Create Match
@@ -352,7 +352,7 @@ export default function MatchSchedule({
 
       {/* Error Message */}
       {error && (
-        <div className="mx-6 mt-4 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-400">
+        <div className="mx-6 mt-4 p-4 bg-red-100 border border-red-300 rounded-lg text-red-700">
           {error}
         </div>
       )}
@@ -360,25 +360,25 @@ export default function MatchSchedule({
       {/* Match Listings */}
       <div className="overflow-y-auto h-[calc(100vh-64px-80px)]">
         {loading ? (
-          <div className="flex items-center justify-center h-64 text-zinc-400">
+          <div className="flex items-center justify-center h-64 text-zinc-600">
             Loading matches...
           </div>
         ) : (
           <>
             {Object.entries(matchesByLeague).map(([league, matches]) => (
-              <div key={league} className="mb-6">
+              <div key={league} className="mb-4">
                 {/* League Header */}
-                <div className="px-6 py-3 bg-zinc-800 border-b border-zinc-700">
+                <div className="px-6 py-3 glass-card mx-4 my-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-white font-semibold">{league}</span>
-                    <span className="text-zinc-400 text-sm">
+                    <span className="text-zinc-900 font-semibold">{league}</span>
+                    <span className="text-zinc-600 text-sm">
                       {matches[0]?.country}
                     </span>
                   </div>
                 </div>
 
                 {/* Matches */}
-                <div className="bg-zinc-900">
+                <div className="space-y-2 px-4 py-2">
                   {matches.map((match) => (
                     <MatchCard
                       key={match.id}
@@ -400,7 +400,7 @@ export default function MatchSchedule({
             ))}
 
             {Object.keys(matchesByLeague).length === 0 && !loading && (
-              <div className="flex items-center justify-center h-64 text-zinc-400">
+              <div className="flex items-center justify-center h-64 text-zinc-600">
                 No matches found
               </div>
             )}
