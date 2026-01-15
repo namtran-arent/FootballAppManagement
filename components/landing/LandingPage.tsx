@@ -2,17 +2,17 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useSession, signOut } from 'next-auth/react';
+import { ChevronLeft, ChevronRight, LogIn, User, LogOut } from 'lucide-react';
 import { Facebook, Instagram } from 'lucide-react';
+import LoginModal from './LoginModal';
 
 export default function LandingPage() {
-  const [email, setEmail] = useState('');
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const { data: session, status } = useSession();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle email submission
-    console.log('Email submitted:', email);
-    setEmail('');
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: '/' });
   };
 
   return (
@@ -48,6 +48,37 @@ export default function LandingPage() {
             </Link>
           </div>
           <div className="flex items-center gap-4">
+            {session?.user ? (
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 text-white">
+                  {session.user.image ? (
+                    <img
+                      src={session.user.image}
+                      alt={session.user.name || 'User'}
+                      className="w-8 h-8 rounded-full"
+                    />
+                  ) : (
+                    <User className="w-5 h-5" />
+                  )}
+                  <span className="text-sm">{session.user.name || session.user.email}</span>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-white transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span className="text-sm">Logout</span>
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsLoginModalOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-lime-400 text-zinc-900 font-medium rounded-lg hover:bg-lime-300 transition-colors"
+              >
+                <LogIn className="w-4 h-4" />
+                <span>Login</span>
+              </button>
+            )}
             <a href="#" className="text-white hover:text-lime-400 transition-colors">
               <Facebook className="w-5 h-5" />
             </a>
@@ -72,33 +103,32 @@ export default function LandingPage() {
             <p className="text-white text-lg leading-relaxed max-w-md">
               Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna.
             </p>
-            
-            {/* Email Subscription Form */}
-            <form onSubmit={handleSubmit} className="flex gap-2 max-w-md">
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 px-4 py-3 bg-zinc-800 border border-zinc-700 rounded text-white placeholder-zinc-500 focus:outline-none focus:border-lime-400 transition-colors"
-                required
-              />
-              <button
-                type="submit"
-                className="px-8 py-3 bg-zinc-800 border border-zinc-700 text-white uppercase font-medium hover:bg-zinc-700 hover:border-lime-400 transition-colors"
-              >
-                SEND
-              </button>
-            </form>
 
             {/* CTA Button to Football Management */}
-            <div className="pt-4">
-              <Link
-                href="/football"
-                className="inline-block px-8 py-3 bg-lime-400 text-zinc-900 uppercase font-bold hover:bg-lime-300 transition-colors"
-              >
-                View Match Schedule
-              </Link>
+            <div className="pt-4 flex gap-4">
+              {session?.user ? (
+                <Link
+                  href="/football"
+                  className="inline-block px-8 py-3 bg-lime-400 text-zinc-900 uppercase font-bold hover:bg-lime-300 transition-colors"
+                >
+                  View Match Schedule
+                </Link>
+              ) : (
+                <>
+                  <button
+                    disabled
+                    className="px-8 py-3 bg-zinc-700 text-zinc-500 uppercase font-bold cursor-not-allowed opacity-50"
+                  >
+                    View Match Schedule
+                  </button>
+                  <button
+                    onClick={() => setIsLoginModalOpen(true)}
+                    className="px-8 py-3 bg-zinc-800 border border-zinc-700 text-white uppercase font-bold hover:bg-zinc-700 hover:border-lime-400 transition-colors"
+                  >
+                    Get Started
+                  </button>
+                </>
+              )}
             </div>
           </div>
 
@@ -199,6 +229,12 @@ export default function LandingPage() {
           </div>
         </div>
       </div>
+
+      {/* Login Modal */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+      />
     </div>
   );
 }

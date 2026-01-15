@@ -5,10 +5,7 @@ import { ChevronLeft, ChevronRight, Calendar, Radio } from 'lucide-react';
 import MatchCard from './MatchCard';
 
 interface MatchScheduleProps {
-  selectedSport: string;
   selectedTeam: string | null;
-  selectedCompetition: string | null;
-  selectedRegion: string | null;
   searchQuery: string;
 }
 
@@ -102,22 +99,13 @@ const SAMPLE_MATCHES: Match[] = [
 ];
 
 export default function MatchSchedule({
-  selectedSport,
   selectedTeam,
-  selectedCompetition,
-  selectedRegion,
   searchQuery,
 }: MatchScheduleProps) {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   // Filter matches based on selections
   const filteredMatches = SAMPLE_MATCHES.filter((match) => {
-    if (selectedCompetition && match.league !== selectedCompetition) {
-      return false;
-    }
-    if (selectedRegion && match.country !== selectedRegion) {
-      return false;
-    }
     if (selectedTeam) {
       if (match.homeTeam !== selectedTeam && match.awayTeam !== selectedTeam) {
         return false;

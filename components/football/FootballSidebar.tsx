@@ -1,70 +1,30 @@
 'use client';
 
-import { Search, ChevronRight } from 'lucide-react';
-import { useState } from 'react';
-
-const SPORTS = ['Football', 'Hockey', 'Basketball', 'Tennis', 'Cricket'];
-
-const TEAMS = [
-  { name: 'Manchester United', country: 'England', logo: '🔴' },
-  { name: 'Liverpool', country: 'England', logo: '🔴' },
-  { name: 'Arsenal', country: 'England', logo: '🔴' },
-  { name: 'Manchester City', country: 'England', logo: '🔵' },
-  { name: 'Real Madrid', country: 'Spain', logo: '⚪' },
-];
-
-const COMPETITIONS = [
-  { name: 'Premier League', country: 'England', logo: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
-  { name: 'LaLiga', country: 'Spain', logo: '🇪🇸' },
-  { name: 'Serie A', country: 'Italy', logo: '🇮🇹' },
-  { name: 'Bundesliga', country: 'Germany', logo: '🇩🇪' },
-  { name: 'Ligue 1', country: 'France', logo: '🇫🇷' },
-];
-
-const REGIONS = [
-  { name: 'England', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
-  { name: 'Champions League', flag: '🏆' },
-  { name: 'Spain', flag: '🇪🇸' },
-  { name: 'Italy', flag: '🇮🇹' },
-  { name: 'Germany', flag: '🇩🇪' },
-];
+import { Search } from 'lucide-react';
 
 interface FootballSidebarProps {
-  selectedSport: string;
-  onSportChange: (sport: string) => void;
   selectedTeam: string | null;
   onTeamChange: (team: string | null) => void;
-  selectedCompetition: string | null;
-  onCompetitionChange: (competition: string | null) => void;
-  selectedRegion: string | null;
-  onRegionChange: (region: string | null) => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
 }
 
 export default function FootballSidebar({
-  selectedSport,
-  onSportChange,
   selectedTeam,
   onTeamChange,
-  selectedCompetition,
-  onCompetitionChange,
-  selectedRegion,
-  onRegionChange,
   searchQuery,
   onSearchChange,
 }: FootballSidebarProps) {
-  const [expandedSections, setExpandedSections] = useState({
-    teams: true,
-    competitions: true,
-    region: true,
-  });
+  const handleTeamsClick = () => {
+    // TODO: Navigate to teams page
+    // router.push('/teams');
+    console.log('Navigate to teams page');
+  };
 
-  const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }));
+  const handleNewsClick = () => {
+    // TODO: Navigate to news page
+    // router.push('/news');
+    console.log('Navigate to news page');
   };
 
   return (
@@ -82,127 +42,26 @@ export default function FootballSidebar({
           />
         </div>
 
-        {/* Sport Tabs */}
-        <div className="flex flex-wrap gap-2">
-          {SPORTS.map((sport) => (
-            <button
-              key={sport}
-              onClick={() => onSportChange(sport)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                selectedSport === sport
-                  ? 'bg-green-500 text-white'
-                  : 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600'
-              }`}
-            >
-              {sport}
-            </button>
-          ))}
-        </div>
-
-        {/* Teams Section */}
+        {/* News Button */}
         <div>
           <button
-            onClick={() => toggleSection('teams')}
-            className="w-full flex items-center justify-between text-zinc-400 hover:text-white transition-colors mb-2"
+            onClick={handleNewsClick}
+            className="w-full px-3 py-2 bg-zinc-700 hover:bg-zinc-600 rounded-lg text-white font-medium transition-colors text-left"
           >
-            <span className="text-xs font-semibold uppercase tracking-wider">
-              Teams
-            </span>
-            <ChevronRight
-              className={`w-4 h-4 transition-transform ${
-                expandedSections.teams ? 'rotate-90' : ''
-              }`}
-            />
+            <span className="text-sm uppercase tracking-wider">News</span>
           </button>
-          {expandedSections.teams && (
-            <div className="space-y-2">
-              {TEAMS.map((team) => (
-                <button
-                  key={team.name}
-                  onClick={() => onTeamChange(team.name === selectedTeam ? null : team.name)}
-                  className={`w-full flex items-center gap-2 px-2 py-1.5 rounded hover:bg-zinc-700 transition-colors ${
-                    selectedTeam === team.name ? 'bg-zinc-700' : ''
-                  }`}
-                >
-                  <span className="text-lg">{team.logo}</span>
-                  <div className="flex-1 text-left">
-                    <div className="text-sm text-white">{team.name}</div>
-                    <div className="text-xs text-zinc-400">{team.country}</div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
         </div>
 
-        {/* Competitions Section */}
+        {/* Teams Button */}
         <div>
           <button
-            onClick={() => toggleSection('competitions')}
-            className="w-full flex items-center justify-between text-zinc-400 hover:text-white transition-colors mb-2"
+            onClick={handleTeamsClick}
+            className="w-full px-3 py-2 bg-zinc-700 hover:bg-zinc-600 rounded-lg text-white font-medium transition-colors text-left"
           >
-            <span className="text-xs font-semibold uppercase tracking-wider">
-              Competitions
-            </span>
-            <ChevronRight
-              className={`w-4 h-4 transition-transform ${
-                expandedSections.competitions ? 'rotate-90' : ''
-              }`}
-            />
+            <span className="text-sm uppercase tracking-wider">Teams</span>
           </button>
-          {expandedSections.competitions && (
-            <div className="space-y-2">
-              {COMPETITIONS.map((comp) => (
-                <button
-                  key={comp.name}
-                  onClick={() => onCompetitionChange(comp.name === selectedCompetition ? null : comp.name)}
-                  className={`w-full flex items-center gap-2 px-2 py-1.5 rounded hover:bg-zinc-700 transition-colors ${
-                    selectedCompetition === comp.name ? 'bg-zinc-700' : ''
-                  }`}
-                >
-                  <span className="text-lg">{comp.logo}</span>
-                  <div className="flex-1 text-left">
-                    <div className="text-sm text-white">{comp.name}</div>
-                    <div className="text-xs text-zinc-400">{comp.country}</div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
         </div>
 
-        {/* Region Section */}
-        <div>
-          <button
-            onClick={() => toggleSection('region')}
-            className="w-full flex items-center justify-between text-zinc-400 hover:text-white transition-colors mb-2"
-          >
-            <span className="text-xs font-semibold uppercase tracking-wider">
-              Region
-            </span>
-            <ChevronRight
-              className={`w-4 h-4 transition-transform ${
-                expandedSections.region ? 'rotate-90' : ''
-              }`}
-            />
-          </button>
-          {expandedSections.region && (
-            <div className="space-y-2">
-              {REGIONS.map((region) => (
-                <button
-                  key={region.name}
-                  onClick={() => onRegionChange(region.name === selectedRegion ? null : region.name)}
-                  className={`w-full flex items-center gap-2 px-2 py-1.5 rounded hover:bg-zinc-700 transition-colors ${
-                    selectedRegion === region.name ? 'bg-zinc-700' : ''
-                  }`}
-                >
-                  <span className="text-lg">{region.flag}</span>
-                  <span className="text-sm text-white">{region.name}</span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
       </div>
     </aside>
   );
