@@ -40,8 +40,8 @@ export async function uploadImage(
       // Check if error is due to missing bucket
       if (uploadError.message?.includes('Bucket not found') || 
           uploadError.message?.includes('does not exist') ||
-          uploadError.statusCode === '404' ||
-          uploadError.error === 'Bucket not found') {
+          (uploadError as any).statusCode === '404' ||
+          (uploadError as any).error === 'Bucket not found') {
         console.error('Storage bucket "team-avatars" does not exist. Please create it in Supabase Dashboard > Storage.');
       }
       

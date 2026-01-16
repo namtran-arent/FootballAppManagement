@@ -293,7 +293,7 @@ export async function getMatchesByDate(date: string): Promise<Match[]> {
 /**
  * Create a new match
  */
-export async function createMatch(match: Omit<Match, 'id' | 'createdAt' | 'updatedAt'>): Promise<Match | null> {
+export async function createMatch(match: Omit<Match, 'id' | 'homeTeam' | 'awayTeam' | 'createdAt' | 'updatedAt'>): Promise<Match | null> {
   if (!supabase) {
     console.error('Supabase is not configured');
     return null;
@@ -310,8 +310,8 @@ export async function createMatch(match: Omit<Match, 'id' | 'createdAt' | 'updat
       country: match.country,
       match_date: match.matchDate,
       match_time: match.matchTime || undefined,
-      location: match.location || null,
-      user_id: match.userId || null,
+      location: match.location || undefined,
+      user_id: match.userId || undefined,
     };
 
     const { data, error } = await supabase
@@ -339,7 +339,7 @@ export async function createMatch(match: Omit<Match, 'id' | 'createdAt' | 'updat
 /**
  * Update an existing match
  */
-export async function updateMatch(id: string, match: Partial<Omit<Match, 'id' | 'createdAt' | 'updatedAt'>>): Promise<Match | null> {
+export async function updateMatch(id: string, match: Partial<Omit<Match, 'id' | 'homeTeam' | 'awayTeam' | 'createdAt' | 'updatedAt'>>): Promise<Match | null> {
   if (!supabase) {
     console.error('Supabase is not configured');
     return null;
@@ -356,8 +356,8 @@ export async function updateMatch(id: string, match: Partial<Omit<Match, 'id' | 
     if (match.league !== undefined) matchUpdate.league = match.league;
     if (match.country !== undefined) matchUpdate.country = match.country;
     if (match.matchDate !== undefined) matchUpdate.match_date = match.matchDate;
-    if (match.matchTime !== undefined) matchUpdate.match_time = match.matchTime || null;
-    if (match.location !== undefined) matchUpdate.location = match.location || null;
+    if (match.matchTime !== undefined) matchUpdate.match_time = match.matchTime || undefined;
+    if (match.location !== undefined) matchUpdate.location = match.location || undefined;
 
     const { data, error } = await supabase
       .from('matches')

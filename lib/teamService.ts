@@ -118,7 +118,7 @@ export async function createTeam(team: Omit<Team, 'id' | 'createdAt' | 'updatedA
 
   try {
     // Only save avatar_url if it's a real URL (not data URL default)
-    let avatarUrl = null;
+    let avatarUrl: string | undefined = undefined;
     if (team.avatarUrl && !team.avatarUrl.startsWith('data:')) {
       avatarUrl = team.avatarUrl;
     }
@@ -128,7 +128,7 @@ export async function createTeam(team: Omit<Team, 'id' | 'createdAt' | 'updatedA
       captain_name: team.captainName,
       captain_phone: team.captainPhone,
       avatar_url: avatarUrl,
-      user_id: team.userId || null,
+      user_id: team.userId || undefined,
     };
 
     const { data, error } = await supabase
@@ -177,9 +177,9 @@ export async function updateTeam(id: string, team: Partial<Omit<Team, 'id' | 'cr
         teamUpdate.avatar_url = team.avatarUrl.trim();
         console.log('Setting avatar_url to:', team.avatarUrl);
       } else {
-        // If empty string or data URL, set to null (removes avatar, uses default)
-        teamUpdate.avatar_url = null;
-        console.log('Setting avatar_url to null (will use default)');
+        // If empty string or data URL, set to undefined (removes avatar, uses default)
+        teamUpdate.avatar_url = undefined;
+        console.log('Setting avatar_url to undefined (will use default)');
       }
     } else {
       // If undefined, don't update the avatar_url field (keeps existing value)

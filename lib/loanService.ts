@@ -163,7 +163,7 @@ export async function getLoanById(id: string): Promise<Loan | null> {
 /**
  * Create a new loan
  */
-export async function createLoan(loan: Omit<Loan, 'id' | 'createdAt' | 'updatedAt'>): Promise<Loan | null> {
+export async function createLoan(loan: Omit<Loan, 'id' | 'team' | 'match' | 'createdAt' | 'updatedAt'>): Promise<Loan | null> {
   if (!supabase) {
     console.error('Supabase is not configured');
     return null;
@@ -175,7 +175,7 @@ export async function createLoan(loan: Omit<Loan, 'id' | 'createdAt' | 'updatedA
       match_id: loan.matchId,
       number_of_players: loan.numberOfPlayers,
       status: loan.status,
-      user_id: loan.userId || null,
+      user_id: loan.userId || undefined,
     };
 
     const { data, error } = await supabase
@@ -211,7 +211,7 @@ export async function createLoan(loan: Omit<Loan, 'id' | 'createdAt' | 'updatedA
 /**
  * Update an existing loan
  */
-export async function updateLoan(id: string, loan: Partial<Omit<Loan, 'id' | 'createdAt' | 'updatedAt'>>): Promise<Loan | null> {
+export async function updateLoan(id: string, loan: Partial<Omit<Loan, 'id' | 'team' | 'match' | 'createdAt' | 'updatedAt'>>): Promise<Loan | null> {
   if (!supabase) {
     console.error('Supabase is not configured');
     return null;
