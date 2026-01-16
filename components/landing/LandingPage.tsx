@@ -19,81 +19,83 @@ export default function LandingPage() {
     <div className="min-h-screen relative overflow-hidden">
 
       {/* Header */}
-      <header className="relative z-10 container mx-auto px-6 py-6">
-        <nav className="flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            <Link href="#about" className="text-zinc-900 uppercase text-sm font-medium hover:text-lime-600 transition-colors">
+      <header className="relative z-10 container mx-auto px-3 md:px-6 py-4 md:py-6">
+        <nav className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-4 md:gap-8">
+            <Link href="#about" className="text-zinc-900 uppercase text-xs md:text-sm font-medium hover:text-lime-600 transition-colors">
               About
             </Link>
-            <Link href="#events" className="text-zinc-900 uppercase text-sm font-medium hover:text-lime-600 transition-colors">
+            <Link href="#events" className="text-zinc-900 uppercase text-xs md:text-sm font-medium hover:text-lime-600 transition-colors">
               Events
             </Link>
-            <Link href="#prices" className="text-zinc-900 uppercase text-sm font-medium hover:text-lime-600 transition-colors">
+            <Link href="#prices" className="text-zinc-900 uppercase text-xs md:text-sm font-medium hover:text-lime-600 transition-colors">
               Prices
             </Link>
-            <Link href="#gallery" className="text-zinc-900 uppercase text-sm font-medium hover:text-lime-600 transition-colors">
+            <Link href="#gallery" className="text-zinc-900 uppercase text-xs md:text-sm font-medium hover:text-lime-600 transition-colors">
               Gallery
             </Link>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             {session?.user ? (
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
                 <div className="flex items-center gap-2 text-zinc-900">
                   {session.user.image ? (
                     <img
                       src={session.user.image}
                       alt={session.user.name || 'User'}
-                      className="w-8 h-8 rounded-full"
+                      className="w-6 h-6 md:w-8 md:h-8 rounded-full"
                     />
                   ) : (
-                    <User className="w-5 h-5" />
+                    <User className="w-4 h-4 md:w-5 md:h-5" />
                   )}
-                  <span className="text-sm font-medium">{session.user.name || session.user.email}</span>
+                  <span className="text-xs md:text-sm font-medium hidden sm:inline">{session.user.name || session.user.email}</span>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-white transition-colors"
+                  className="flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 btn-gradient font-medium rounded-lg text-xs md:text-sm"
                 >
-                  <LogOut className="w-4 h-4" />
-                  <span className="text-sm">Logout</span>
+                  <LogOut className="w-3 h-3 md:w-4 md:h-4" />
+                  <span>Logout</span>
                 </button>
               </div>
             ) : (
               <button
                 onClick={() => setIsLoginModalOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 btn-gradient font-medium rounded-lg"
+                className="flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 btn-gradient font-medium rounded-lg text-xs md:text-sm"
               >
-                <LogIn className="w-4 h-4" />
+                <LogIn className="w-3 h-3 md:w-4 md:h-4" />
                 <span>Login</span>
               </button>
             )}
-            <a href="#" className="text-zinc-900 hover:text-lime-600 transition-colors">
-              <Facebook className="w-5 h-5" />
-            </a>
-            <a href="#" className="text-zinc-900 hover:text-lime-600 transition-colors">
-              <Instagram className="w-5 h-5" />
-            </a>
+            <div className="flex items-center gap-2">
+              <a href="#" className="text-zinc-900 hover:text-lime-600 transition-colors" aria-label="Facebook">
+                <Facebook className="w-4 h-4 md:w-5 md:h-5" />
+              </a>
+              <a href="#" className="text-zinc-900 hover:text-lime-600 transition-colors" aria-label="Instagram">
+                <Instagram className="w-4 h-4 md:w-5 md:h-5" />
+              </a>
+            </div>
           </div>
         </nav>
       </header>
 
       {/* Hero Section */}
-      <div className="relative z-10 container mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center min-h-[calc(100vh-200px)]">
+      <div className="relative z-10 container mx-auto px-3 md:px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 items-center min-h-[calc(100vh-180px)] md:min-h-[calc(100vh-200px)]">
           {/* Left Content Block */}
-          <div className="space-y-6 z-20">
-            <h1 className="text-6xl md:text-7xl font-bold uppercase text-zinc-900 leading-tight">
+          <div className="space-y-4 md:space-y-6 z-20">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold uppercase text-zinc-900 leading-tight">
               SOCCER LIFE
             </h1>
-            <h2 className="text-2xl md:text-3xl font-bold uppercase text-lime-600">
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold uppercase text-lime-600">
               20 GOALS YOU WILL NEVER SEE AGAIN
             </h2>
-            <p className="text-zinc-700 text-lg leading-relaxed max-w-md">
+            <p className="text-zinc-700 text-base md:text-lg leading-relaxed max-w-md">
               Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna.
             </p>
 
             {/* CTA Button to Football Management */}
-            <div className="pt-4 flex gap-4">
+            <div className="pt-2 md:pt-4 flex flex-col sm:flex-row gap-3 md:gap-4">
               {session?.user ? (
                 <Link
                   href="/football"

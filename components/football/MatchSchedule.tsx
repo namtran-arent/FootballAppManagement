@@ -310,68 +310,71 @@ export default function MatchSchedule({
   };
 
   return (
-    <div className="flex-1">
+    <div className="flex-1 w-full">
       {/* Date Navigation */}
-      <div className="glass-card mx-4 my-4 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button className="px-4 py-2 btn-gradient rounded-lg font-medium flex items-center gap-2">
-              <Radio className="w-4 h-4" />
+      <div className="glass-card mx-2 md:mx-4 my-2 md:my-4 px-3 md:px-6 py-3 md:py-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="flex items-center gap-2 md:gap-4 w-full sm:w-auto">
+            <button className="px-3 md:px-4 py-1.5 md:py-2 btn-gradient rounded-lg font-medium flex items-center gap-2 text-xs md:text-sm">
+              <Radio className="w-3 h-3 md:w-4 md:h-4" />
               LIVE
             </button>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 md:gap-2 flex-1 sm:flex-initial">
               <button
                 onClick={() => navigateDate('prev')}
-                className="p-2 hover:bg-zinc-200 rounded transition-colors"
+                className="p-1.5 md:p-2 hover:bg-zinc-200 rounded transition-colors"
+                aria-label="Previous day"
               >
-                <ChevronLeft className="w-5 h-5 text-zinc-700" />
+                <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-zinc-700" />
               </button>
-              <span className="px-4 py-2 text-zinc-900 font-medium">
+              <span className="px-2 md:px-4 py-1 md:py-2 text-zinc-900 font-medium text-sm md:text-base text-center min-w-[100px] sm:min-w-[120px]">
                 {formatDate(selectedDate)}
               </span>
               <button
                 onClick={() => navigateDate('next')}
-                className="p-2 hover:bg-zinc-200 rounded transition-colors"
+                className="p-1.5 md:p-2 hover:bg-zinc-200 rounded transition-colors"
+                aria-label="Next day"
               >
-                <ChevronRight className="w-5 h-5 text-zinc-700" />
+                <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-zinc-700" />
               </button>
             </div>
-            <button className="p-2 hover:bg-zinc-200 rounded transition-colors">
-              <Calendar className="w-5 h-5 text-zinc-600" />
+            <button className="p-1.5 md:p-2 hover:bg-zinc-200 rounded transition-colors hidden sm:block" aria-label="Calendar">
+              <Calendar className="w-4 h-4 md:w-5 md:h-5 text-zinc-600" />
             </button>
           </div>
           <button
             onClick={handleCreateClick}
-            className="px-4 py-2 btn-gradient rounded-lg font-medium flex items-center gap-2"
+            className="w-full sm:w-auto px-3 md:px-4 py-1.5 md:py-2 btn-gradient rounded-lg font-medium flex items-center justify-center gap-2 text-xs md:text-sm"
           >
-            <Plus className="w-4 h-4" />
-            Create Match
+            <Plus className="w-3 h-3 md:w-4 md:h-4" />
+            <span className="hidden sm:inline">Create Match</span>
+            <span className="sm:hidden">Create</span>
           </button>
         </div>
       </div>
 
       {/* Error Message */}
       {error && (
-        <div className="mx-6 mt-4 p-4 bg-red-100 border border-red-300 rounded-lg text-red-700">
+        <div className="mx-2 md:mx-6 mt-2 md:mt-4 p-3 md:p-4 bg-red-100 border border-red-300 rounded-lg text-red-700 text-sm md:text-base">
           {error}
         </div>
       )}
 
       {/* Match Listings */}
-      <div className="overflow-y-auto h-[calc(100vh-64px-80px)]">
+      <div className="overflow-y-auto h-[calc(100vh-180px)] md:h-[calc(100vh-200px)]">
         {loading ? (
-          <div className="flex items-center justify-center h-64 text-zinc-600">
+          <div className="flex items-center justify-center h-64 text-zinc-600 text-sm md:text-base">
             Loading matches...
           </div>
         ) : (
           <>
             {Object.entries(matchesByLeague).map(([league, matches]) => (
-              <div key={league} className="mb-4">
+              <div key={league} className="mb-3 md:mb-4">
                 {/* League Header */}
-                <div className="px-6 py-3 glass-card mx-4 my-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-zinc-900 font-semibold">{league}</span>
-                    <span className="text-zinc-600 text-sm">
+                <div className="px-4 md:px-6 py-2 md:py-3 glass-card mx-2 md:mx-4 my-2">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-zinc-900 font-semibold text-sm md:text-base">{league}</span>
+                    <span className="text-zinc-600 text-xs md:text-sm">
                       {matches[0]?.country}
                     </span>
                   </div>

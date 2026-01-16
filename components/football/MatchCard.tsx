@@ -78,10 +78,10 @@ export default function MatchCard({
   }, [matchDate, matchTime, matchHasStarted, status]);
 
   return (
-    <div className="mx-4 my-2 glass-card px-4 py-3 hover:shadow-lg transition-all duration-300">
-      <div className="flex items-center justify-between">
+    <div className="mx-2 md:mx-4 my-2 glass-card px-3 md:px-4 py-2 md:py-3 hover:shadow-lg transition-all duration-300">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-2">
         {/* Status, Date and Time Info */}
-        <div className="w-28 text-xs text-zinc-600 font-medium flex flex-col gap-1">
+        <div className="w-full sm:w-28 text-xs text-zinc-600 font-medium flex flex-row sm:flex-col gap-2 sm:gap-1">
           <div className="font-semibold text-zinc-900">{status}</div>
           {dateDisplay && (
             <div className="text-zinc-500 text-[11px]">
@@ -101,29 +101,29 @@ export default function MatchCard({
         </div>
 
         {/* Teams and Scores */}
-        <div className="flex-1 flex items-center justify-between">
-          <div className="flex items-center gap-3 flex-1">
+        <div className="flex-1 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0 w-full sm:w-auto">
+          <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
             <img
               src={homeTeam.avatarUrl || getDefaultAvatarUrl()}
               alt={homeTeam.teamName}
-              className="w-8 h-8 object-cover rounded"
+              className="w-6 h-6 md:w-8 md:h-8 object-cover rounded flex-shrink-0"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = getDefaultAvatarUrl();
               }}
             />
-            <span className="text-zinc-900 font-medium">{homeTeam.teamName}</span>
+            <span className="text-zinc-900 font-medium text-sm md:text-base truncate">{homeTeam.teamName}</span>
           </div>
-          <div className="flex items-center gap-2 mx-4">
-            <span className="text-zinc-900 font-semibold text-lg">{homeScore}</span>
+          <div className="flex items-center gap-2 mx-2 md:mx-4">
+            <span className="text-zinc-900 font-semibold text-base md:text-lg">{homeScore}</span>
             <span className="text-zinc-500">-</span>
-            <span className="text-zinc-900 font-semibold text-lg">{awayScore}</span>
+            <span className="text-zinc-900 font-semibold text-base md:text-lg">{awayScore}</span>
           </div>
-          <div className="flex items-center gap-3 flex-1 justify-end">
-            <span className="text-zinc-900 font-medium">{awayTeam.teamName}</span>
+          <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0 justify-end">
+            <span className="text-zinc-900 font-medium text-sm md:text-base truncate">{awayTeam.teamName}</span>
             <img
               src={awayTeam.avatarUrl || getDefaultAvatarUrl()}
               alt={awayTeam.teamName}
-              className="w-8 h-8 object-cover rounded"
+              className="w-6 h-6 md:w-8 md:h-8 object-cover rounded flex-shrink-0"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = getDefaultAvatarUrl();
               }}
@@ -132,7 +132,7 @@ export default function MatchCard({
         </div>
 
         {/* Action Buttons */}
-        <div className="ml-4 flex items-center gap-2">
+        <div className="flex items-center gap-2 self-end sm:self-auto">
           {onEdit && (
             <button
               onClick={onEdit}
@@ -144,7 +144,7 @@ export default function MatchCard({
               }`}
               title={matchHasStarted ? 'Match has started. Only score can be updated.' : 'Edit match'}
             >
-              <Edit2 className="w-5 h-5" />
+              <Edit2 className="w-4 h-4 md:w-5 md:h-5" />
             </button>
           )}
           {onDelete && (
@@ -158,16 +158,16 @@ export default function MatchCard({
               }`}
               title={matchHasStarted ? 'Cannot delete match that has started' : 'Delete match'}
             >
-              <Trash2 className="w-5 h-5" />
+              <Trash2 className="w-4 h-4 md:w-5 md:h-5" />
             </button>
           )}
         </div>
       </div>
       {/* Location */}
       {location && (
-        <div className="mt-2 ml-16 text-xs text-zinc-600 flex items-center gap-1">
+        <div className="mt-2 text-xs text-zinc-600 flex items-center gap-1">
           <span>📍</span>
-          <span>{location}</span>
+          <span className="break-words">{location}</span>
         </div>
       )}
     </div>

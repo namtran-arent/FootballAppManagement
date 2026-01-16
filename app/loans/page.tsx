@@ -27,11 +27,20 @@ export default function LoansPage() {
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info'; isVisible: boolean }>({
     message: '',
     type: 'success',
     isVisible: false,
   });
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
 
   const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
     setToast({ message, type, isVisible: true });
@@ -228,23 +237,26 @@ export default function LoansPage() {
 
   return (
     <div className="min-h-screen">
-      <FootballHeader />
+      <FootballHeader onMenuToggle={toggleSidebar} isMenuOpen={isSidebarOpen} />
       <div className="flex">
-        <FootballSidebar />
-        <div className="flex-1 container mx-auto px-6 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold text-zinc-900">Loan Management</h1>
+        <FootballSidebar
+          isOpen={isSidebarOpen}
+          onClose={closeSidebar}
+        />
+        <div className="flex-1 w-full lg:w-auto container mx-auto px-3 md:px-6 py-4 md:py-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+          <h1 className="text-2xl md:text-3xl font-bold text-zinc-900">Loan Management</h1>
           <button
             onClick={handleCreateClick}
-            className="px-6 py-3 btn-gradient rounded-lg font-medium"
+            className="w-full sm:w-auto px-4 md:px-6 py-2 md:py-3 btn-gradient rounded-lg font-medium text-sm md:text-base"
           >
             + Create Loan
           </button>
         </div>
 
         {/* Date Navigation */}
-        <div className="mb-6 glass-card p-4">
-          <div className="flex items-center justify-between">
+        <div className="mb-6 glass-card p-3 md:p-4">
+          <div className="flex items-center justify-between gap-2">
             <button
               onClick={() => navigateDate('prev')}
               className="p-2 hover:bg-zinc-200 rounded-lg transition-colors"
@@ -253,10 +265,10 @@ export default function LoansPage() {
               <ChevronLeft className="w-5 h-5 text-zinc-700" />
             </button>
             
-            <div className="flex items-center gap-3">
-              <Calendar className="w-5 h-5 text-green-600" />
-              <div className="text-center">
-                <div className="text-lg font-semibold text-zinc-900">{formatDate(selectedDate)}</div>
+            <div className="flex items-center gap-2 md:gap-3 flex-1 justify-center">
+              <Calendar className="w-4 h-4 md:w-5 md:h-5 text-green-600 flex-shrink-0" />
+              <div className="text-center hidden sm:block">
+                <div className="text-base md:text-lg font-semibold text-zinc-900">{formatDate(selectedDate)}</div>
                 <div className="text-xs text-zinc-600">
                   {selectedDate.toLocaleDateString('en-US', {
                     year: 'numeric',
@@ -273,7 +285,7 @@ export default function LoansPage() {
                     setSelectedDate(new Date(e.target.value));
                   }
                 }}
-                className="ml-2 px-3 py-1 bg-white border border-zinc-300 rounded text-zinc-900 text-sm focus:outline-none focus:border-green-500"
+                className="px-2 md:px-3 py-1 bg-white border border-zinc-300 rounded text-zinc-900 text-xs md:text-sm focus:outline-none focus:border-green-500 flex-shrink-0"
               />
             </div>
 

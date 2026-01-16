@@ -136,7 +136,7 @@ export default function LoanForm({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 md:p-4">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
@@ -144,21 +144,22 @@ export default function LoanForm({
       ></div>
 
       {/* Modal */}
-      <div className="relative bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl w-full max-w-2xl p-8 z-10 max-h-[90vh] overflow-y-auto">
+      <div className="relative glass-card rounded-lg shadow-2xl w-full max-w-2xl p-4 md:p-6 lg:p-8 z-10 max-h-[95vh] md:max-h-[90vh] overflow-y-auto">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-zinc-600 hover:text-zinc-900 transition-colors"
+          className="absolute top-3 right-3 md:top-4 md:right-4 text-zinc-600 hover:text-zinc-900 transition-colors p-1"
+          aria-label="Close"
         >
-          <X className="w-6 h-6" />
+          <X className="w-5 h-5 md:w-6 md:h-6" />
         </button>
 
         {/* Header */}
-        <div className="mb-6">
-          <h2 className="text-3xl font-bold text-zinc-900 mb-2">
-            {mode === 'create' ? 'Create New Loan' : 'Edit Loan'}
+        <div className="mb-4 md:mb-6 pr-8">
+          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-zinc-900 mb-1 md:mb-2">
+            {mode === 'create' ? 'Create New Loan' : 'Update Loan Information'}
           </h2>
-          <p className="text-zinc-600">
+          <p className="text-sm md:text-base text-zinc-600">
             {mode === 'create'
               ? 'Add a new player loan agreement'
               : 'Update loan information'}
@@ -166,14 +167,14 @@ export default function LoanForm({
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
           {loadingData ? (
             <div className="text-center py-8 text-zinc-600">Loading teams and matches...</div>
           ) : (
             <>
               {/* Team Selection */}
               <div>
-                <label className="block text-sm font-medium text-zinc-700 mb-2">
+                <label className="block text-sm font-medium text-zinc-700 mb-1 md:mb-2">
                   Team
                 </label>
                 <select
@@ -181,7 +182,7 @@ export default function LoanForm({
                   onChange={(e) =>
                     setFormData({ ...formData, teamId: e.target.value })
                   }
-                  className="w-full px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 focus:outline-none focus:border-green-500 transition-colors"
+                  className="w-full px-3 md:px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 focus:outline-none focus:border-green-500 transition-colors text-sm md:text-base"
                   required
                 >
                   <option value="">Select team</option>
@@ -195,7 +196,7 @@ export default function LoanForm({
 
               {/* Match Selection */}
               <div>
-                <label className="block text-sm font-medium text-zinc-700 mb-2">
+                <label className="block text-sm font-medium text-zinc-700 mb-1 md:mb-2">
                   Match
                 </label>
                 <select
@@ -203,7 +204,7 @@ export default function LoanForm({
                   onChange={(e) =>
                     setFormData({ ...formData, matchId: e.target.value })
                   }
-                  className="w-full px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 focus:outline-none focus:border-green-500 transition-colors"
+                  className="w-full px-3 md:px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 focus:outline-none focus:border-green-500 transition-colors text-sm md:text-base"
                   required
                   disabled={!formData.teamId}
                 >
@@ -217,7 +218,7 @@ export default function LoanForm({
                   ))}
                 </select>
                 {formData.matchId && (
-                  <p className="mt-2 text-xs text-zinc-600">
+                  <p className="mt-2 text-xs text-zinc-600 break-words">
                     {(() => {
                       const selectedMatch = filteredMatches.find(m => m.id === formData.matchId);
                       return selectedMatch
@@ -240,10 +241,10 @@ export default function LoanForm({
             </>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
             {/* Number of Players */}
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <label className="block text-sm font-medium text-zinc-700 mb-1 md:mb-2">
                 Number of Players Needed
               </label>
               <input
@@ -256,14 +257,14 @@ export default function LoanForm({
                     numberOfPlayers: parseInt(e.target.value) || 1,
                   })
                 }
-                className="w-full px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-green-500 transition-colors"
+                className="w-full px-3 md:px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-green-500 transition-colors text-sm md:text-base"
                 required
               />
             </div>
 
             {/* Status */}
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <label className="block text-sm font-medium text-zinc-700 mb-1 md:mb-2">
                 Status
               </label>
                 <select
@@ -274,7 +275,7 @@ export default function LoanForm({
                       status: e.target.value as Loan['status'],
                     })
                   }
-                  className="w-full px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 focus:outline-none focus:border-green-500 transition-colors"
+                  className="w-full px-3 md:px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 focus:outline-none focus:border-green-500 transition-colors text-sm md:text-base"
                   required
                 >
                 <option value="pending">Pending</option>
@@ -285,17 +286,17 @@ export default function LoanForm({
           </div>
 
           {/* Submit Button */}
-          <div className="flex gap-4 pt-4">
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-3 md:pt-4">
             <button
               type="submit"
-              className="flex-1 py-3 btn-gradient font-bold rounded-lg"
+              className="flex-1 py-2 md:py-3 btn-gradient font-bold rounded-lg text-sm md:text-base"
             >
               {mode === 'create' ? 'Create Loan' : 'Update Loan'}
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-3 bg-zinc-200 text-zinc-900 font-bold rounded-lg hover:bg-zinc-300 transition-colors"
+              className="flex-1 py-2 md:py-3 bg-zinc-200 text-zinc-900 font-bold rounded-lg hover:bg-zinc-300 transition-colors text-sm md:text-base"
             >
               Cancel
             </button>

@@ -1,6 +1,6 @@
 'use client';
 
-import { LogOut, User, Home } from 'lucide-react';
+import { LogOut, User, Home, X } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 
@@ -9,6 +9,8 @@ interface FootballSidebarProps {
   onTeamChange?: (team: string | null) => void;
   searchQuery?: string;
   onSearchChange?: (query: string) => void;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
 export default function FootballSidebar({
@@ -16,6 +18,8 @@ export default function FootballSidebar({
   onTeamChange,
   searchQuery,
   onSearchChange,
+  isOpen = true,
+  onClose,
 }: FootballSidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -45,13 +49,54 @@ export default function FootballSidebar({
     return pathname === path;
   };
 
+  const handleNavigation = (callback: () => void) => {
+    callback();
+    // Close mobile menu after navigation
+    if (onClose) {
+      onClose();
+    }
+  };
+
   return (
-    <aside className="w-64 glass-card border-r border-zinc-200/50 h-[calc(100vh-100px)] flex flex-col overflow-hidden mx-4 mt-4 mb-6">
+    <>
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={onClose}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`
+          fixed lg:static
+          top-0 left-0
+          w-64 h-full lg:h-[calc(100vh-100px)]
+          glass-card border-r border-zinc-200/50
+          flex flex-col overflow-hidden
+          z-50 lg:z-auto
+          transform transition-transform duration-300 ease-in-out
+          ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+          lg:mx-4 lg:mt-4 lg:mb-6
+        `}
+      >
+        {/* Mobile Close Button */}
+        <div className="lg:hidden flex items-center justify-between p-4 border-b border-zinc-200/50">
+          <h2 className="text-lg font-semibold text-zinc-900">Menu</h2>
+          <button
+            onClick={onClose}
+            className="text-zinc-600 hover:text-zinc-900 transition-colors p-1"
+            aria-label="Close menu"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
       <div className="flex-1 p-4 space-y-6 overflow-y-auto min-h-0">
         {/* Home Button */}
         <div>
           <button
-            onClick={handleHomeClick}
+            onClick={() => handleNavigation(handleHomeClick)}
             className={`w-full px-3 py-2 rounded-lg font-medium transition-colors text-left ${
               pathname === '/'
                 ? 'btn-gradient text-white'
@@ -68,7 +113,7 @@ export default function FootballSidebar({
         {/* Match Schedule Button */}
         <div>
           <button
-            onClick={handleMatchScheduleClick}
+            onClick={() => handleNavigation(handleMatchScheduleClick)}
             className={`w-full px-3 py-2 rounded-lg font-medium transition-colors text-left ${
               isActive('/football')
                 ? 'btn-gradient text-white'
@@ -82,7 +127,7 @@ export default function FootballSidebar({
         {/* Teams Button */}
         <div>
           <button
-            onClick={handleTeamsClick}
+            onClick={() => handleNavigation(handleTeamsClick)}
             className={`w-full px-3 py-2 rounded-lg font-medium transition-colors text-left ${
               isActive('/teams')
                 ? 'btn-gradient text-white'
@@ -96,7 +141,7 @@ export default function FootballSidebar({
         {/* Loan Button */}
         <div>
           <button
-            onClick={handleLoanClick}
+            onClick={() => handleNavigation(handleLoanClick)}
             className={`w-full px-3 py-2 rounded-lg font-medium transition-colors text-left ${
               isActive('/loans')
                 ? 'btn-gradient text-white'
@@ -147,5 +192,6 @@ export default function FootballSidebar({
         </button>
       </div>
     </aside>
+    </>
   );
 }

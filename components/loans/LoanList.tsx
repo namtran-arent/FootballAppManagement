@@ -81,26 +81,26 @@ export default function LoanList({ loans, onEdit, onDelete }: LoanListProps) {
 
   return (
     <div className="glass-card overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
+      <div className="overflow-x-auto -mx-2 md:mx-0">
+        <table className="w-full border-collapse min-w-[700px]">
           <thead className="bg-zinc-100/50 border-b border-zinc-200/50">
             <tr>
-              <th className="px-6 py-4 text-center text-sm font-semibold text-zinc-700">
+              <th className="px-3 md:px-6 py-3 md:py-4 text-center text-xs md:text-sm font-semibold text-zinc-700">
                 Team Name
               </th>
-              <th className="px-6 py-4 text-center text-sm font-semibold text-zinc-700">
+              <th className="px-3 md:px-6 py-3 md:py-4 text-center text-xs md:text-sm font-semibold text-zinc-700 hidden sm:table-cell">
                 Match
               </th>
-              <th className="px-6 py-4 text-center text-sm font-semibold text-zinc-700">
+              <th className="px-3 md:px-6 py-3 md:py-4 text-center text-xs md:text-sm font-semibold text-zinc-700">
                 Match Date
               </th>
-              <th className="px-6 py-4 text-center text-sm font-semibold text-zinc-700">
-                Number of Players
+              <th className="px-3 md:px-6 py-3 md:py-4 text-center text-xs md:text-sm font-semibold text-zinc-700 hidden md:table-cell">
+                Players
               </th>
-              <th className="px-6 py-4 text-center text-sm font-semibold text-zinc-700">
+              <th className="px-3 md:px-6 py-3 md:py-4 text-center text-xs md:text-sm font-semibold text-zinc-700">
                 Status
               </th>
-              <th className="px-6 py-4 text-center text-sm font-semibold text-zinc-700">
+              <th className="px-3 md:px-6 py-3 md:py-4 text-center text-xs md:text-sm font-semibold text-zinc-700">
                 Actions
               </th>
             </tr>
@@ -123,44 +123,47 @@ export default function LoanList({ loans, onEdit, onDelete }: LoanListProps) {
                         : 'hover:bg-zinc-50/50'
                     }`}
                   >
-                    <td className="px-6 py-4 text-center">
-                      <div className="text-zinc-900 font-medium">
+                    <td className="px-3 md:px-6 py-3 md:py-4 text-center">
+                      <div className="text-zinc-900 font-medium text-sm md:text-base">
                         {loan.team.teamName}
                       </div>
+                      <div className="text-zinc-600 text-xs sm:hidden mt-1">
+                        {matchInfo}
+                      </div>
                     </td>
-                    <td className="px-6 py-4 text-center">
-                      <div className="text-zinc-700">{matchInfo}</div>
+                    <td className="px-3 md:px-6 py-3 md:py-4 text-center hidden sm:table-cell">
+                      <div className="text-zinc-700 text-sm md:text-base">{matchInfo}</div>
                     </td>
-                    <td className="px-6 py-4 text-center">
-                      <div className="text-zinc-700">
+                    <td className="px-3 md:px-6 py-3 md:py-4 text-center">
+                      <div className="text-zinc-700 text-sm md:text-base">
                         {formatDate(loan.match.matchDate)}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-center">
-                      <div className="text-zinc-700">
+                    <td className="px-3 md:px-6 py-3 md:py-4 text-center hidden md:table-cell">
+                      <div className="text-zinc-700 text-sm md:text-base">
                         {loan.numberOfPlayers} {loan.numberOfPlayers === 1 ? 'player' : 'players'}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-center">
+                    <td className="px-3 md:px-6 py-3 md:py-4 text-center">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(
+                        className={`px-2 md:px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(
                           matchFinished ? 'completed' : loan.status
                         )}`}
                       >
                         {matchFinished ? 'COMPLETED' : loan.status.toUpperCase()}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-center">
-                      <div className="flex items-center justify-center gap-2">
+                    <td className="px-3 md:px-6 py-3 md:py-4 text-center">
+                      <div className="flex items-center justify-center gap-1 md:gap-2">
                         <button
                           onClick={() => toggleExpand(loan.id)}
                           className="text-zinc-600 hover:text-zinc-900 transition-colors"
                           title={isExpanded ? 'Collapse details' : 'Expand details'}
                         >
                           {isExpanded ? (
-                            <ChevronUp className="w-5 h-5" />
+                            <ChevronUp className="w-4 h-4 md:w-5 md:h-5" />
                           ) : (
-                            <ChevronDown className="w-5 h-5" />
+                            <ChevronDown className="w-4 h-4 md:w-5 md:h-5" />
                           )}
                         </button>
                         <button
@@ -173,7 +176,7 @@ export default function LoanList({ loans, onEdit, onDelete }: LoanListProps) {
                           }`}
                           title={matchFinished ? 'Match has finished, cannot edit' : 'Edit loan'}
                         >
-                          <Edit2 className="w-5 h-5" />
+                          <Edit2 className="w-4 h-4 md:w-5 md:h-5" />
                         </button>
                         <button
                           onClick={() => onDelete(loan.id)}
@@ -185,15 +188,15 @@ export default function LoanList({ loans, onEdit, onDelete }: LoanListProps) {
                           }`}
                           title={matchFinished ? 'Match has finished, cannot delete' : 'Delete loan'}
                         >
-                          <Trash2 className="w-5 h-5" />
+                          <Trash2 className="w-4 h-4 md:w-5 md:h-5" />
                         </button>
                       </div>
                     </td>
                   </tr>
                   {isExpanded && (
                     <tr>
-                      <td colSpan={6} className="px-6 py-4 bg-zinc-50/30 border-t border-zinc-200/30">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                      <td colSpan={6} className="px-3 md:px-6 py-3 md:py-4 bg-zinc-50/30 border-t border-zinc-200/30">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 text-xs md:text-sm">
                           {/* Location */}
                           <div>
                             <div className="text-zinc-500 text-xs font-medium mb-1">Location</div>

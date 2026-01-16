@@ -171,7 +171,7 @@ export default function TeamForm({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 md:p-4">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
@@ -179,21 +179,22 @@ export default function TeamForm({
       ></div>
 
       {/* Modal */}
-      <div className="relative bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl w-full max-w-2xl p-8 z-10 max-h-[90vh] overflow-y-auto">
+      <div className="relative glass-card rounded-lg shadow-2xl w-full max-w-2xl p-4 md:p-6 lg:p-8 z-10 max-h-[95vh] md:max-h-[90vh] overflow-y-auto">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-zinc-600 hover:text-zinc-900 transition-colors"
+          className="absolute top-3 right-3 md:top-4 md:right-4 text-zinc-600 hover:text-zinc-900 transition-colors p-1"
+          aria-label="Close"
         >
-          <X className="w-6 h-6" />
+          <X className="w-5 h-5 md:w-6 md:h-6" />
         </button>
 
         {/* Header */}
-        <div className="mb-6">
-          <h2 className="text-3xl font-bold text-zinc-900 mb-2">
-            {mode === 'create' ? 'Create New Team' : 'Edit Team'}
+        <div className="mb-4 md:mb-6 pr-8">
+          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-zinc-900 mb-1 md:mb-2">
+            {mode === 'create' ? 'Create New Team' : 'Update Team Information'}
           </h2>
-          <p className="text-zinc-600">
+          <p className="text-sm md:text-base text-zinc-600">
             {mode === 'create'
               ? 'Add a new team to the system'
               : 'Update team information'}
@@ -201,10 +202,10 @@ export default function TeamForm({
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
           {/* Team Name */}
           <div>
-                <label className="block text-sm font-medium text-zinc-700 mb-2">
+            <label className="block text-sm font-medium text-zinc-700 mb-1 md:mb-2">
               Team Name
             </label>
             <input
@@ -213,7 +214,7 @@ export default function TeamForm({
               onChange={(e) =>
                 setFormData({ ...formData, teamName: e.target.value })
               }
-              className="w-full px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-green-500 transition-colors"
+              className="w-full px-3 md:px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-green-500 transition-colors text-sm md:text-base"
               placeholder="Enter team name"
               required
             />
@@ -221,7 +222,7 @@ export default function TeamForm({
 
           {/* Captain Name */}
           <div>
-                <label className="block text-sm font-medium text-zinc-700 mb-2">
+            <label className="block text-sm font-medium text-zinc-700 mb-1 md:mb-2">
               Captain Name
             </label>
             <input
@@ -230,7 +231,7 @@ export default function TeamForm({
               onChange={(e) =>
                 setFormData({ ...formData, captainName: e.target.value })
               }
-              className="w-full px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-green-500 transition-colors"
+              className="w-full px-3 md:px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-green-500 transition-colors text-sm md:text-base"
               placeholder="Enter captain name"
               required
             />
@@ -238,7 +239,7 @@ export default function TeamForm({
 
           {/* Captain Phone */}
           <div>
-                <label className="block text-sm font-medium text-zinc-700 mb-2">
+            <label className="block text-sm font-medium text-zinc-700 mb-1 md:mb-2">
               Captain Phone
             </label>
             <input
@@ -247,7 +248,7 @@ export default function TeamForm({
               onChange={(e) =>
                 setFormData({ ...formData, captainPhone: e.target.value })
               }
-              className="w-full px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-green-500 transition-colors"
+              className="w-full px-3 md:px-4 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-green-500 transition-colors text-sm md:text-base"
               placeholder="Enter captain phone number"
               required
             />
@@ -255,25 +256,25 @@ export default function TeamForm({
 
           {/* Avatar Upload */}
           <div>
-                <label className="block text-sm font-medium text-zinc-700 mb-2">
+            <label className="block text-sm font-medium text-zinc-700 mb-1 md:mb-2">
               Team Avatar
             </label>
-            <div className="space-y-3">
+            <div className="space-y-2 md:space-y-3">
               {/* Preview */}
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4">
                 {avatarPreview && (
-                  <div className="relative">
+                  <div className="relative flex-shrink-0">
                     <img
                       src={avatarPreview}
                       alt="Team avatar preview"
-                      className="w-24 h-24 object-cover rounded-lg border border-zinc-700"
+                      className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-lg border border-zinc-300"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = getDefaultAvatarUrl();
                       }}
                     />
                   </div>
                 )}
-                <div className="flex-1">
+                <div className="flex-1 w-full sm:w-auto">
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -285,16 +286,16 @@ export default function TeamForm({
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploading}
-                    className="px-4 py-2 bg-zinc-200 border border-zinc-300 rounded-lg text-zinc-900 hover:bg-zinc-300 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full sm:w-auto px-3 md:px-4 py-2 bg-zinc-200 border border-zinc-300 rounded-lg text-zinc-900 hover:bg-zinc-300 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
                   >
                     <Upload className="w-4 h-4" />
                     {avatarFile ? 'Change Image' : 'Upload Image'}
                   </button>
-                    {avatarFile && (
-                      <p className="mt-2 text-xs text-zinc-600">
-                        Selected: {avatarFile.name}
-                      </p>
-                    )}
+                  {avatarFile && (
+                    <p className="mt-2 text-xs text-zinc-600 break-words">
+                      Selected: {avatarFile.name}
+                    </p>
+                  )}
                   <p className="mt-1 text-xs text-zinc-500">
                     Leave empty to use default avatar
                   </p>
@@ -304,11 +305,11 @@ export default function TeamForm({
           </div>
 
           {/* Submit Button */}
-          <div className="flex gap-4 pt-4">
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-3 md:pt-4">
             <button
               type="submit"
               disabled={uploading}
-              className="flex-1 py-3 btn-gradient font-bold rounded-lg"
+              className="flex-1 py-2 md:py-3 btn-gradient font-bold rounded-lg text-sm md:text-base"
             >
               {uploading
                 ? 'Uploading...'
@@ -319,7 +320,7 @@ export default function TeamForm({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-3 bg-zinc-700 text-white font-bold rounded-lg hover:bg-zinc-600 transition-colors"
+              className="flex-1 py-2 md:py-3 bg-zinc-200 text-zinc-900 font-bold rounded-lg hover:bg-zinc-300 transition-colors text-sm md:text-base"
             >
               Cancel
             </button>

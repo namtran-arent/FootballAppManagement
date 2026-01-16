@@ -20,11 +20,20 @@ export default function TeamsPage() {
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info'; isVisible: boolean }>({
     message: '',
     type: 'success',
     isVisible: false,
   });
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
 
   const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
     setToast({ message, type, isVisible: true });
@@ -165,15 +174,18 @@ export default function TeamsPage() {
 
   return (
     <div className="min-h-screen">
-      <FootballHeader />
+      <FootballHeader onMenuToggle={toggleSidebar} isMenuOpen={isSidebarOpen} />
       <div className="flex">
-        <FootballSidebar />
-        <div className="flex-1 container mx-auto px-6 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold text-zinc-900">Team Management</h1>
+        <FootballSidebar
+          isOpen={isSidebarOpen}
+          onClose={closeSidebar}
+        />
+        <div className="flex-1 w-full lg:w-auto container mx-auto px-3 md:px-6 py-4 md:py-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+          <h1 className="text-2xl md:text-3xl font-bold text-zinc-900">Team Management</h1>
           <button
             onClick={handleCreateClick}
-            className="px-6 py-3 btn-gradient rounded-lg font-medium"
+            className="w-full sm:w-auto px-4 md:px-6 py-2 md:py-3 btn-gradient rounded-lg font-medium text-sm md:text-base"
           >
             + Create Team
           </button>
