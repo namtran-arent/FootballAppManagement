@@ -158,6 +158,12 @@ Sau khi deploy, bạn sẽ có URL như: `https://your-app-name.vercel.app`
 - Kiểm tra logs trong Vercel Dashboard → Deployments
 - Đảm bảo tất cả dependencies đã được cài đặt đúng
 - Kiểm tra TypeScript errors: `yarn build` local trước
+- **Nếu build local thành công nhưng Vercel vẫn fail:**
+  - Vercel có thể đang build từ commit cũ hoặc cache cũ
+  - Vào Vercel Dashboard → Project → Settings → General
+  - Click "Clear Build Cache" và redeploy
+  - Hoặc trigger một deployment mới bằng cách push một commit mới (có thể là empty commit)
+  - Đảm bảo Vercel đang build từ branch `main` và commit mới nhất
 
 ### Images không hiển thị
 - Kiểm tra Supabase Storage bucket `team-avatars` đã được tạo
