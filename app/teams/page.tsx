@@ -89,7 +89,8 @@ export default function TeamsPage() {
     try {
       const updatedTeam = await updateTeam(editingTeam.id, teamData);
       if (updatedTeam) {
-        setTeams(teams.map((team) => (team.id === editingTeam.id ? updatedTeam : team)));
+        // Reload teams from database to ensure we have the latest data including avatar URLs
+        await loadTeams();
         showToast('Team updated successfully!', 'success');
         return true;
       } else {
@@ -202,6 +203,10 @@ export default function TeamsPage() {
           onSubmit={handleFormSubmit}
           team={editingTeam}
           mode={formMode}
+          onError={(message) => {
+            setError(message);
+            showToast(message, 'error');
+          }}
         />
 
         {/* Toast Notification */}

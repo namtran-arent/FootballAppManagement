@@ -31,12 +31,21 @@ interface TeamUpdate {
  * Convert database team to app team format
  */
 function mapTeamFromDb(dbTeam: any): Team {
+  // Log for debugging
+  console.log('Mapping team from DB:', {
+    id: dbTeam.id,
+    team_name: dbTeam.team_name,
+    avatar_url: dbTeam.avatar_url,
+  });
+  
   return {
     id: dbTeam.id,
     teamName: dbTeam.team_name,
     captainName: dbTeam.captain_name,
     captainPhone: dbTeam.captain_phone,
-    avatarUrl: dbTeam.avatar_url || getDefaultAvatarUrl(),
+    // Return the actual URL from database if it exists, otherwise undefined
+    // The view components will use getDefaultAvatarUrl() as fallback
+    avatarUrl: dbTeam.avatar_url || undefined,
     userId: dbTeam.user_id,
     createdAt: dbTeam.created_at,
     updatedAt: dbTeam.updated_at,
@@ -157,7 +166,27 @@ export async function updateTeam(id: string, team: Partial<Omit<Team, 'id' | 'cr
     if (team.teamName !== undefined) teamUpdate.team_name = team.teamName;
     if (team.captainName !== undefined) teamUpdate.captain_name = team.captainName;
     if (team.captainPhone !== undefined) teamUpdate.captain_phone = team.captainPhone;
-    if (team.avatarUrl !== undefined) teamUpdate.avatar_url = team.avatarUrl || null;
+    
+    // Handle avatar_url update
+    // If avatarUrl is explicitly provided (not undefined), update it
+    // If undefined, don't include in update (preserves existing value in DB)
+    if (team.avatarUrl !== undefined) {
+      console.log('Updating avatar_url. Value:', team.avatarUrl);
+      // Check if it's a valid URL (not empty, not data URL)
+      if (team.avatarUrl && team.avatarUrl.trim() !== '' && !team.avatarUrl.startsWith('data:')) {
+        teamUpdate.avatar_url = team.avatarUrl.trim();
+        console.log('Setting avatar_url to:', team.avatarUrl);
+      } else {
+        // If empty string or data URL, set to null (removes avatar, uses default)
+        teamUpdate.avatar_url = null;
+        console.log('Setting avatar_url to null (will use default)');
+      }
+    } else {
+      // If undefined, don't update the avatar_url field (keeps existing value)
+      console.log('avatarUrl is undefined, not updating avatar_url field (preserving existing value)');
+    }
+
+    console.log('Team update payload:', JSON.stringify(teamUpdate, null, 2));
 
     const { data, error } = await supabase
       .from('teams')
@@ -168,10 +197,14 @@ export async function updateTeam(id: string, team: Partial<Omit<Team, 'id' | 'cr
 
     if (error) {
       console.error('Error updating team:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
       return null;
     }
 
-    return data ? mapTeamFromDb(data) : null;
+    const mappedTeam = data ? mapTeamFromDb(data) : null;
+    console.log('Updated team from database:', mappedTeam);
+    console.log('Avatar URL after update:', mappedTeam?.avatarUrl);
+    return mappedTeam;
   } catch (error) {
     console.error('Exception in updateTeam:', error);
     return null;

@@ -11,6 +11,7 @@ interface TeamFormProps {
   onSubmit: (team: Omit<Team, 'id' | 'createdAt' | 'updatedAt'>) => void;
   team?: Team | null;
   mode: 'create' | 'edit';
+  onError?: (message: string) => void;
 }
 
 export default function TeamForm({
@@ -19,6 +20,7 @@ export default function TeamForm({
   onSubmit,
   team,
   mode,
+  onError,
 }: TeamFormProps) {
   const [formData, setFormData] = useState({
     teamName: '',
@@ -39,6 +41,7 @@ export default function TeamForm({
         captainPhone: team.captainPhone,
         avatarUrl: team.avatarUrl || '',
       });
+      // Use actual avatar URL if exists, otherwise show default for preview
       setAvatarPreview(team.avatarUrl || getDefaultAvatarUrl());
       setAvatarFile(null);
     } else {
@@ -88,31 +91,80 @@ export default function TeamForm({
       // Upload new file if selected
       if (avatarFile) {
         try {
+          console.log('Uploading image file:', avatarFile.name, 'Size:', avatarFile.size);
           const uploadedUrl = await uploadImage(avatarFile);
-          if (uploadedUrl) {
-            finalAvatarUrl = uploadedUrl;
+          console.log('Uploaded URL result:', uploadedUrl);
+          console.log('Uploaded URL type:', typeof uploadedUrl);
+          console.log('Uploaded URL is truthy?', !!uploadedUrl);
+          
+          if (uploadedUrl && uploadedUrl.trim() !== '') {
+            finalAvatarUrl = uploadedUrl.trim();
+            console.log('Successfully set finalAvatarUrl to:', finalAvatarUrl);
           } else {
-            console.warn('Failed to upload image. Team will be created without avatar.');
+            console.warn('Upload returned empty or invalid URL. Upload may have failed.');
+            const errorMessage = 'Failed to upload avatar. Please check that the "team-avatars" storage bucket exists in Supabase Dashboard > Storage.';
+            if (onError) {
+              onError(errorMessage);
+            } else {
+              alert(errorMessage);
+            }
             // Don't set finalAvatarUrl, let it be undefined so it uses default
+            // But in edit mode, we should keep existing avatar if upload fails
+            if (mode === 'edit' && team) {
+              finalAvatarUrl = team.avatarUrl;
+              console.log('Upload failed, keeping existing avatar URL:', finalAvatarUrl);
+            }
           }
         } catch (uploadError) {
           console.error('Error uploading image:', uploadError);
-          // Continue without avatar - team will use default
+          const errorMessage = 'Error uploading avatar. Please check that the "team-avatars" storage bucket exists in Supabase Dashboard > Storage.';
+          if (onError) {
+            onError(errorMessage);
+          } else {
+            alert(errorMessage);
+          }
+          // In edit mode, keep existing avatar if upload fails
+          if (mode === 'edit' && team) {
+            finalAvatarUrl = team.avatarUrl;
+            console.log('Upload error, keeping existing avatar URL:', finalAvatarUrl);
+          }
         }
+      } else if (mode === 'edit' && team) {
+        // If editing and no new file selected, keep the existing avatar URL
+        // Even if it's undefined (no avatar), we need to explicitly pass it
+        // so updateTeam knows to keep the current state (not set to null)
+        console.log('Edit mode - keeping existing avatar URL:', team.avatarUrl);
+        finalAvatarUrl = team.avatarUrl; // This can be undefined if no avatar exists
       }
 
       // Submit with or without avatarUrl
-      onSubmit({
+      const submitData: Omit<Team, 'id' | 'createdAt' | 'updatedAt'> = {
         ...formData,
-        avatarUrl: finalAvatarUrl,
-      });
+      };
+      
+      // Always include avatarUrl in submit data
+      // For edit mode: include even if undefined (to preserve existing state)
+      // For create mode: include if we have a value, otherwise undefined (uses default)
+      submitData.avatarUrl = finalAvatarUrl;
+      
+      console.log('=== SUBMIT DATA ===');
+      console.log('Mode:', mode);
+      console.log('finalAvatarUrl:', finalAvatarUrl);
+      console.log('submitData.avatarUrl:', submitData.avatarUrl);
+      console.log('Full submitData:', JSON.stringify(submitData, null, 2));
+      console.log('==================');
+
+      onSubmit(submitData);
     } catch (error) {
       console.error('Error in handleSubmit:', error);
-      // Still try to submit without avatar
-      onSubmit({
+      // Still try to submit - for edit mode, keep existing avatar
+      const submitData: Omit<Team, 'id' | 'createdAt' | 'updatedAt'> = {
         ...formData,
-        avatarUrl: undefined,
-      });
+      };
+      if (mode === 'edit' && team) {
+        submitData.avatarUrl = team.avatarUrl;
+      }
+      onSubmit(submitData);
     } finally {
       setUploading(false);
     }

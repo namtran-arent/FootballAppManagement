@@ -30,9 +30,84 @@ Hướng dẫn thiết lập Supabase để lưu thông tin người dùng khi �
 
 ### 2.5. Tạo Storage Bucket cho Team Avatars
 
-1. Vào **Storage** trong Supabase Dashboard
-2. Tạo bucket mới với tên `team-avatars` (Public bucket)
-3. Xem chi tiết trong file `SUPABASE_STORAGE_SETUP.md`
+**QUAN TRỌNG**: Storage bucket phải được tạo để upload avatar hoạt động!
+
+1. Vào **Storage** trong Supabase Dashboard (menu bên trái)
+2. Click **"New bucket"** hoặc **"Create bucket"**
+3. Đặt tên bucket: `team-avatars` (phải chính xác tên này)
+4. Chọn **"Public bucket"** (quan trọng để có thể truy cập public URL)
+5. Click **"Create bucket"**
+
+**Cấu hình RLS Policies cho bucket:**
+
+Sau khi tạo bucket, cần cấu hình Row Level Security (RLS) policies:
+
+1. Vào **Storage** > **Policies** (hoặc click vào bucket `team-avatars` > **Policies**)
+2. Tạo policy mới với các settings sau:
+   - **Policy name**: `Public read access`
+   - **Allowed operation**: `SELECT` (read)
+   - **Policy definition**: 
+     ```sql
+     bucket_id = 'team-avatars'
+     ```
+   - **WITH CHECK expression**: (để trống hoặc giống Policy definition)
+   - Click **"Save policy"**
+
+3. Tạo policy thứ 2 cho upload:
+   - **Policy name**: `Authenticated upload access`
+   - **Allowed operation**: `INSERT` (upload)
+   - **Policy definition**:
+     ```sql
+     bucket_id = 'team-avatars'
+     ```
+   - **WITH CHECK expression**:
+     ```sql
+     bucket_id = 'team-avatars'
+     ```
+   - Click **"Save policy"**
+
+4. Tạo policy thứ 3 cho update/delete:
+   - **Policy name**: `Authenticated update/delete access`
+   - **Allowed operation**: `UPDATE` và `DELETE`
+   - **Policy definition**:
+     ```sql
+     bucket_id = 'team-avatars'
+     ```
+   - **WITH CHECK expression**:
+     ```sql
+     bucket_id = 'team-avatars'
+     ```
+   - Click **"Save policy"**
+
+**Hoặc sử dụng SQL để tạo policies:**
+
+Vào **SQL Editor** và chạy:
+
+```sql
+-- Allow public read access
+CREATE POLICY "Public read access" ON storage.objects
+FOR SELECT
+USING (bucket_id = 'team-avatars');
+
+-- Allow authenticated users to upload
+CREATE POLICY "Authenticated upload access" ON storage.objects
+FOR INSERT
+WITH CHECK (bucket_id = 'team-avatars');
+
+-- Allow authenticated users to update/delete
+CREATE POLICY "Authenticated update/delete access" ON storage.objects
+FOR UPDATE
+USING (bucket_id = 'team-avatars');
+
+CREATE POLICY "Authenticated delete access" ON storage.objects
+FOR DELETE
+USING (bucket_id = 'team-avatars');
+```
+
+**Kiểm tra:**
+- Bucket `team-avatars` xuất hiện trong danh sách Storage buckets
+- Bucket có status "Public"
+- Policies đã được tạo và active
 
 ### 2.6. Lưu ý về Foreign Keys
 
@@ -216,3 +291,23 @@ Sau khi setup xong:
 - Xem logs trong console để biết lỗi cụ thể
 - Đảm bảo các trường bắt buộc (team_name, captain_name, captain_phone) đều có giá trị
 - Kiểm tra `team_name` phải là unique (không trùng với team khác)
+
+### Lỗi khi upload Avatar (Storage bucket không tồn tại)
+**Lỗi phổ biến**: `Storage bucket "team-avatars" does not exist`
+
+**Giải pháp**:
+1. Vào Supabase Dashboard > **Storage**
+2. Tạo bucket mới với tên chính xác: `team-avatars`
+3. Đảm bảo bucket được set là **"Public bucket"**
+4. Cấu hình RLS policies như hướng dẫn ở mục 2.5
+5. Refresh trang và thử upload lại
+
+**Kiểm tra bucket đã được tạo**:
+- Vào Storage trong Supabase Dashboard
+- Xem danh sách buckets, `team-avatars` phải có trong danh sách
+- Click vào bucket để xem details và policies
+
+**Lỗi khác liên quan đến Storage**:
+- Nếu upload thành công nhưng avatar không hiển thị: Kiểm tra RLS policies có cho phép public read không
+- Nếu lỗi "Forbidden" khi upload: Kiểm tra RLS policies có cho phép INSERT không
+- Nếu URL không hợp lệ: Kiểm tra bucket name phải chính xác là `team-avatars` (không có khoảng trắng, đúng chữ hoa/thường)

@@ -19,26 +19,13 @@ export async function uploadImage(
   }
 
   try {
-    // Check if bucket exists by trying to list it
-    const { data: buckets, error: bucketError } = await supabase.storage.listBuckets();
-    
-    if (bucketError) {
-      console.error('Error checking buckets:', bucketError);
-      return null;
-    }
-
-    const bucketExists = buckets?.some(bucket => bucket.name === 'team-avatars');
-    if (!bucketExists) {
-      console.warn('Storage bucket "team-avatars" does not exist. Please create it in Supabase Dashboard > Storage.');
-      return null;
-    }
-
     // Generate unique filename
     const fileExt = file.name.split('.').pop();
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
     const filePath = `${folder}/${fileName}`;
 
-    // Upload file
+    // Try to upload file directly - this is more reliable than checking bucket existence
+    // If bucket doesn't exist, upload will fail with a clear error message
     const { error: uploadError } = await supabase.storage
       .from('team-avatars')
       .upload(filePath, file, {
@@ -49,6 +36,15 @@ export async function uploadImage(
     if (uploadError) {
       console.error('Error uploading image:', uploadError);
       console.error('Upload error details:', JSON.stringify(uploadError, null, 2));
+      
+      // Check if error is due to missing bucket
+      if (uploadError.message?.includes('Bucket not found') || 
+          uploadError.message?.includes('does not exist') ||
+          uploadError.statusCode === '404' ||
+          uploadError.error === 'Bucket not found') {
+        console.error('Storage bucket "team-avatars" does not exist. Please create it in Supabase Dashboard > Storage.');
+      }
+      
       return null;
     }
 
@@ -56,6 +52,14 @@ export async function uploadImage(
     const {
       data: { publicUrl },
     } = supabase.storage.from('team-avatars').getPublicUrl(filePath);
+
+    console.log('Generated public URL:', publicUrl);
+    console.log('File path:', filePath);
+    
+    if (!publicUrl) {
+      console.error('Failed to get public URL for uploaded file');
+      return null;
+    }
 
     return publicUrl;
   } catch (error) {
